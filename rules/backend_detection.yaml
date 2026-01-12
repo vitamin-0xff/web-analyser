@@ -1,0 +1,180 @@
+# Enhanced backend framework detection rules
+# Detects frameworks from cookies, response patterns, and signatures
+
+- name: Custom Backend
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "t"
+      confidence: 0.4
+    - type: cookie
+      name: "s"
+      confidence: 0.4
+    - type: cookie
+      name: "u"
+      confidence: 0.4
+
+- name: Laravel
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "XSRF-TOKEN"
+      confidence: 0.8
+    - type: cookie
+      name: "laravel_session"
+      confidence: 0.95
+    - type: header
+      name: "X-Powered-By"
+      pattern: "Laravel"
+      confidence: 0.95
+    - type: html_pattern
+      pattern: "CSRF_TOKEN|csrf_token|laravel"
+      confidence: 0.6
+
+- name: Django
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "csrftoken"
+      confidence: 0.9
+    - type: cookie
+      name: "sessionid"
+      confidence: 0.8
+    - type: header
+      name: "Server"
+      pattern: "WSGIServer"
+      confidence: 0.95
+    - type: html_pattern
+      pattern: "csrfmiddlewaretoken|django"
+      confidence: 0.6
+
+- name: Flask
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "session"
+      confidence: 0.7
+    - type: header
+      name: "Server"
+      pattern: "Werkzeug"
+      confidence: 0.95
+
+- name: Express.js
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "connect.sid"
+      confidence: 0.85
+    - type: header
+      name: "X-Powered-By"
+      pattern: "Express"
+      confidence: 0.95
+
+- name: Spring Boot
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "JSESSIONID"
+      confidence: 0.9
+    - type: header
+      name: "Server"
+      pattern: "Tomcat|Jetty"
+      confidence: 0.8
+
+- name: ASP.NET
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "ASP.NET_SessionId"
+      confidence: 0.95
+    - type: cookie
+      name: ".ASPXAUTH"
+      confidence: 0.95
+    - type: header
+      name: "Server"
+      pattern: "IIS|Microsoft"
+      confidence: 0.85
+
+- name: Ruby on Rails
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "_session"
+      confidence: 0.8
+    - type: header
+      name: "X-Runtime"
+      pattern: "."
+      confidence: 0.7
+
+- name: Next.js
+  category: Frontend Framework
+  evidence:
+    - type: header
+      name: "X-Powered-By"
+      pattern: "Next\\.js"
+      confidence: 0.95
+    - type: script_src
+      pattern: "/_next/"
+      confidence: 0.95
+
+- name: Nuxt.js
+  category: Frontend Framework
+  evidence:
+    - type: header
+      name: "X-Powered-By"
+      pattern: "Nuxt"
+      confidence: 0.95
+    - type: script_src
+      pattern: "/_nuxt/"
+      confidence: 0.95
+
+- name: Svelte
+  category: Frontend Framework
+  evidence:
+    - type: html_pattern
+      pattern: "svelte"
+      confidence: 0.6
+    - type: script_src
+      pattern: "/svelte-"
+      confidence: 0.8
+
+- name: PHP
+  category: Programming Language
+  evidence:
+    - type: header
+      name: "X-Powered-By"
+      pattern: "PHP|php"
+      confidence: 0.9
+    - type: cookie
+      name: "PHPSESSID"
+      confidence: 0.95
+
+- name: Tailwind CSS
+  category: CSS Framework
+  evidence:
+    - type: html_pattern
+      pattern: "class=\"[^\"]*(?:px-|py-|m-|flex|grid)[^\"]*\""
+      confidence: 0.6
+    - type: script_src
+      pattern: "tailwindcss"
+      confidence: 0.9
+
+- name: Bootstrap
+  category: CSS Framework
+  evidence:
+    - type: html_pattern
+      pattern: "class=\"[^\"]*(?:container|row|col-)[^\"]*\""
+      confidence: 0.5
+    - type: link_href
+      pattern: "bootstrap"
+      confidence: 0.9
+
+- name: Material UI
+  category: UI Framework
+  evidence:
+    - type: html_pattern
+      pattern: "class=\"[^\"]*(?:MuiButton|MuiCard|MuiPaper)[^\"]*\""
+      confidence: 0.9
+    - type: script_src
+      pattern: "@mui|material-ui"
+      confidence: 0.95

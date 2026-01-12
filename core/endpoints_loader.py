@@ -3,7 +3,7 @@ import os
 import yaml
 from typing import List, Dict, Any, Optional
 
-def load_config(config_file: str = "rules/api_endpoints.yaml") -> Dict[str, Any]:
+def load_config(config_file: str = "config/api_endpoints.yaml") -> Dict[str, Any]:
     """
     Load configuration from a YAML file.
     
@@ -21,45 +21,45 @@ def load_config(config_file: str = "rules/api_endpoints.yaml") -> Dict[str, Any]
         return data if data else {}
 
 
-def load_api_endpoints(rules_dir: str = "rules") -> List[str]:
+def load_api_endpoints(config_dir: str = "config") -> List[str]:
     """
     Load API endpoints from configuration file.
     
     Args:
-        rules_dir: Directory where api_endpoints.yaml is located
+        config_dir: Directory where api_endpoints.yaml is located
         
     Returns:
         List of API endpoint paths
     """
-    config = load_config(os.path.join(rules_dir, "api_endpoints.yaml"))
+    config = load_config(os.path.join(config_dir, "api_endpoints.yaml"))
     return config.get("endpoints", [])
 
 
-def load_error_probe_paths(rules_dir: str = "rules") -> tuple[List[str], List[str]]:
+def load_error_probe_paths(config_dir: str = "config") -> tuple[List[str], List[str]]:
     """
     Load error probe paths and parameters from configuration file.
     
     Args:
-        rules_dir: Directory where error_probe_paths.yaml is located
+        config_dir: Directory where error_probe_paths.yaml is located
         
     Returns:
         Tuple of (error_paths, error_params)
     """
-    config = load_config(os.path.join(rules_dir, "error_probe_paths.yaml"))
+    config = load_config(os.path.join(config_dir, "error_probe_paths.yaml"))
     return config.get("error_paths", []), config.get("error_params", [])
 
 
-def load_graphql_endpoints(rules_dir: str = "rules") -> tuple[List[str], str, str]:
+def load_graphql_endpoints(config_dir: str = "config") -> tuple[List[str], str, str]:
     """
     Load GraphQL endpoints and queries from configuration file.
     
     Args:
-        rules_dir: Directory where graphql_endpoints.yaml is located
+        config_dir: Directory where graphql_endpoints.yaml is located
         
     Returns:
         Tuple of (graphql_paths, introspection_query, simple_query)
     """
-    config = load_config(os.path.join(rules_dir, "graphql_endpoints.yaml"))
+    config = load_config(os.path.join(config_dir, "graphql_endpoints.yaml"))
     return (
         config.get("graphql_paths", []),
         config.get("introspection_query", ""),
@@ -67,15 +67,15 @@ def load_graphql_endpoints(rules_dir: str = "rules") -> tuple[List[str], str, st
     )
 
 
-def load_admin_pages(rules_dir: str = "rules") -> tuple[List[str], List[str]]:
+def load_admin_pages(config_dir: str = "config") -> tuple[List[str], List[str]]:
     """
     Load admin page paths and indicators from configuration file.
     
     Args:
-        rules_dir: Directory where admin_pages.yaml is located
+        config_dir: Directory where admin_pages.yaml is located
         
     Returns:
         Tuple of (admin_paths, admin_indicators)
     """
-    config = load_config(os.path.join(rules_dir, "admin_pages.yaml"))
+    config = load_config(os.path.join(config_dir, "admin_pages.yaml"))
     return config.get("admin_paths", []), config.get("admin_indicators", [])
