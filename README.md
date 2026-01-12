@@ -385,8 +385,7 @@ $ uv run python3 main.py https://myapp.example.com
 5. Open a pull request
 
 ## License
-
-[Specify your license here, e.g., MIT, Apache 2.0]
+Apache 2.0
 
 ## Authors
 
