@@ -43,3 +43,69 @@
       name: "TXT"
       pattern: "google-site-verification"
       confidence: 0.7
+
+# Extended network/CDN/CA detections
+
+- name: Akamai
+  category: CDN
+  evidence:
+    - type: dns_record
+      name: "CNAME"
+      pattern: 'akamaihd\.net|edgekey\.net|edgesuite\.net'
+      confidence: 0.8
+
+- name: Fastly
+  category: CDN
+  evidence:
+    - type: dns_record
+      name: "CNAME"
+      pattern: 'fastly\.net'
+      confidence: 0.8
+
+- name: Amazon CloudFront
+  category: CDN
+  evidence:
+    - type: dns_record
+      name: "CNAME"
+      pattern: 'cloudfront\.net'
+      confidence: 0.8
+
+- name: Netlify
+  category: Hosting
+  evidence:
+    - type: dns_record
+      name: "CNAME"
+      pattern: 'netlify\.app'
+      confidence: 0.7
+
+- name: Vercel
+  category: Hosting
+  evidence:
+    - type: dns_record
+      name: "CNAME"
+      pattern: 'vercel\.app'
+      confidence: 0.7
+
+- name: DigiCert
+  category: Certificate Authority
+  evidence:
+    - type: tls_issuer
+      name: "organizationName"
+      pattern: "DigiCert"
+      confidence: 0.9
+
+- name: Sectigo
+  category: Certificate Authority
+  evidence:
+    - type: tls_issuer
+      name: "organizationName"
+      pattern: "Sectigo|COMODO"
+      confidence: 0.9
+
+- name: SPF Record Present
+  category: Email
+  evidence:
+    - type: dns_record
+      name: "TXT"
+      pattern: "v=spf1"
+      confidence: 0.6

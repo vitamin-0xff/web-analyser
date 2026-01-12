@@ -47,3 +47,45 @@
     - type: script_src
       pattern: 'jquery.*\.js'
       confidence: 0.9
+
+# Extended frontend detections
+
+- name: Next.js
+  category: Frontend Framework
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <div\s+id=["']__next["']>
+      confidence: 0.8
+
+- name: Angular
+  category: Frontend Framework
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <\w+\s+[^>]*ng-version=["'][^"']+["']
+      confidence: 0.8
+
+- name: Hugo
+  category: Static Site Generator
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <meta\s+name=["']generator["']\s+content=["'][^"']*hugo[^"']*["']>
+      confidence: 0.9
+
+- name: Squarespace
+  category: CMS
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <meta\s+name=["']generator["']\s+content=["'][^"']*squarespace[^"']*["']>
+      confidence: 0.9
+
+- name: Shopify
+  category: Ecommerce
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <meta\s+name=["']generator["']\s+content=["'][^"']*shopify[^"']*["']>
+      confidence: 0.9

@@ -84,3 +84,81 @@
       name: "X-AspNet-Version"
       pattern: "." # Any value indicates presence
       confidence: 0.9
+
+# Extended backend/server detections
+
+- name: Varnish
+  category: Web Accelerator
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Varnish"
+      confidence: 0.8
+
+- name: Fastly
+  category: CDN
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Fastly"
+      confidence: 0.7
+
+- name: OpenResty
+  category: Web Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "openresty"
+      confidence: 0.8
+
+- name: Caddy
+  category: Web Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Caddy"
+      confidence: 0.8
+
+- name: Apache Tomcat
+  category: Web Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Apache-Coyote"
+      confidence: 0.8
+    - type: header
+      name: "X-Powered-By"
+      pattern: "Servlet"
+      confidence: 0.6
+
+- name: Gunicorn
+  category: Application Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "gunicorn"
+      confidence: 0.8
+
+- name: uWSGI
+  category: Application Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "uwsgi"
+      confidence: 0.8
+
+- name: Puma
+  category: Application Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "puma"
+      confidence: 0.7
+
+- name: Koa
+  category: Web Framework
+  evidence:
+    - type: header
+      name: "X-Powered-By"
+      pattern: "koa"
+      confidence: 0.8

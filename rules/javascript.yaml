@@ -59,3 +59,85 @@
     - type: script_src
       pattern: 'moment.*\.js'
       confidence: 0.9
+
+# Extended JavaScript detections
+
+- name: Google Tag Manager
+  category: Analytics
+  evidence:
+    - type: script_src
+      pattern: 'gtm\.js|/gtm\.js'
+      confidence: 0.8
+    - type: js_global
+      pattern: 'dataLayer'
+      confidence: 0.7
+
+- name: Google Analytics
+  category: Analytics
+  evidence:
+    - type: script_src
+      pattern: 'analytics\.js|gtag/js'
+      confidence: 0.8
+    - type: js_global
+      pattern: 'gtag|ga'
+      confidence: 0.7
+
+- name: Alpine.js
+  category: JavaScript Library
+  evidence:
+    - type: script_src
+      pattern: 'alpine(\.min)?\.js'
+      confidence: 0.8
+    - type: js_global
+      pattern: 'Alpine'
+      confidence: 0.8
+
+- name: Preact
+  category: Frontend Framework
+  evidence:
+    - type: script_src
+      pattern: 'preact(\.min)?\.js'
+      confidence: 0.7
+    - type: js_global
+      pattern: 'preact|Preact'
+      confidence: 0.8
+
+- name: D3.js
+  category: JavaScript Library
+  evidence:
+    - type: script_src
+      pattern: 'd3(\.min)?\.js'
+      confidence: 0.8
+    - type: js_global
+      pattern: 'd3'
+      confidence: 0.9
+
+- name: Three.js
+  category: JavaScript Library
+  evidence:
+    - type: script_src
+      pattern: 'three(\.min)?\.js'
+      confidence: 0.8
+    - type: js_global
+      pattern: 'THREE'
+      confidence: 0.9
+
+- name: GSAP
+  category: JavaScript Library
+  evidence:
+    - type: script_src
+      pattern: 'gsap(\.min)?\.js'
+      confidence: 0.8
+    - type: js_global
+      pattern: 'gsap'
+      confidence: 0.9
+
+- name: Stripe.js
+  category: Payments
+  evidence:
+    - type: script_src
+      pattern: 'js\.stripe\.com'
+      confidence: 0.9
+    - type: js_global
+      pattern: 'Stripe'
+      confidence: 0.9

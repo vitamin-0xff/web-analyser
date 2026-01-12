@@ -23,3 +23,65 @@
       pattern: |
         class=".*(flex|grid|p-|m-|text-).*"
       confidence: 0.5
+
+# Extended CSS detections
+
+- name: Bulma
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: |
+        bulma(\.min)?\.css
+      confidence: 0.9
+    - type: html_pattern
+      pattern: |
+        class=".*(navbar|hero|section|columns).*"
+      confidence: 0.4
+
+- name: Foundation
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: |
+        foundation(\.min)?\.css
+      confidence: 0.9
+    - type: html_pattern
+      pattern: |
+        class=".*(grid-x|cell|button|callout).*"
+      confidence: 0.4
+
+- name: Materialize
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: |
+        materialize(\.min)?\.css
+      confidence: 0.9
+    - type: html_pattern
+      pattern: |
+        class=".*(container|row|col|card|btn).*"
+      confidence: 0.3
+
+- name: Semantic UI
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: |
+        semantic(\.min)?\.css
+      confidence: 0.9
+    - type: html_pattern
+      pattern: |
+        class=".*(ui\s+grid|ui\s+button|ui\s+card).*"
+      confidence: 0.4
+
+- name: Font Awesome
+  category: Icon Library
+  evidence:
+    - type: css_link
+      pattern: |
+        (fontawesome|font-awesome)(\.min)?\.css
+      confidence: 0.9
+    - type: html_pattern
+      pattern: |
+        class=".*fa-[a-z0-9-]+.*"
+      confidence: 0.5

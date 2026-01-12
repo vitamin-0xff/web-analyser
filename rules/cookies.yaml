@@ -26,3 +26,35 @@
     - type: cookie
       name: "cf_clearance"
       confidence: 0.8
+
+# Extended cookies detections
+
+- name: Django
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "sessionid"
+      confidence: 0.8
+
+- name: Laravel
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "XSRF-TOKEN"
+      confidence: 0.8
+    - type: cookie
+      name: "laravel_session"
+      confidence: 0.8
+
+- name: Shopify
+  category: Ecommerce
+  evidence:
+    - type: cookie
+      name: "_shopify_y"
+      confidence: 0.7
+    - type: cookie
+      name: "_shopify_s"
+      confidence: 0.7
+    - type: cookie
+      name: "secure_customer_sig"
+      confidence: 0.7
