@@ -20,21 +20,19 @@ Set up GitHub Actions for automated testing and quality checks:
 - Automated releases with tags
 
 ### 2. Performance Optimization ⚡
-**Status**: In Progress
+**Status**: Mostly Complete - Core improvements done, profiling/UI pending
 
 Address slow scan issues and improve efficiency:
-- Profile the engine to find bottlenecks
-- Add request timeouts (configurable)
-- Implement caching for repeated scans (favicon, robots.txt, etc.)
+- Profile the engine to find remaining bottlenecks
+- ✅ Add request timeouts (HTTP 10s, DNS 5s, TLS 5s)
+- ✅ Implement caching for repeated scans (robots.txt 10min, favicon 1hr)
 - Parallelize analyzer execution where possible
 - Add progress indicators for long scans
 
 **Implementation Tasks**:
-- [ ] Add timeout configurations to HTTP/DNS/TLS clients
-- [ ] Implement in-memory caching for static resources
-- [ ] Profile slow scans to identify bottlenecks
-- [ ] Add async timeout handling
-- [ ] Optimize regex patterns in rules
+- [x] Add timeout configurations to HTTP/DNS/TLS clients
+- [x] Implement in-memory caching for static resources (core/cache.py)
+- [ ] Profile slow scans to identify remaining bottlenecks
 - [ ] Add progress indicators
 
 ### 3. Version Detection Enhancement 🔍
