@@ -4,6 +4,7 @@ import hashlib
 import logging
 from core.context import ScanContext, TLSInfo
 from core.cache import get_cache
+from core.detection_aggregator import DetectionAggregator
 from fetch.http_client import fetch_url
 from fetch.dns_client import get_dns_records
 from fetch.tls_client import get_tls_info
@@ -31,11 +32,14 @@ import analyzers.forms
 import analyzers.sri
 import analyzers.comments
 import analyzers.assets
+import analyzers.certificate
 # Active detection analyzers (require --active flag)
 import analyzers.graphql
 import analyzers.api_probe
 import analyzers.error_probe
 import analyzers.api_keys
+import analyzers.admin_pages
+import analyzers.source_code_leak
 
 from models.detection import Detection, Evidence
 from models.technology import Technology, EvidenceRule
@@ -298,24 +302,33 @@ class Engine:
         return self._aggregate_detections(detections)
 
     def _aggregate_detections(self, detections: List[Detection]) -> List[Detection]:
-        """Combine multiple hits per technology and sum confidences capped at 1.0."""
-        by_name: Dict[str, Detection] = {}
-        for d in detections:
-            prev = by_name.get(d.name)
-            if prev:
-                total = min(1.0, prev.confidence + d.confidence)
-                # Keep strongest evidence; merge version if one exists
-                strongest = d if d.confidence > prev.confidence else prev
-                by_name[d.name] = Detection(
-                    name=prev.name,
-                    category=prev.category,
-                    confidence=total,
-                    evidence=strongest.evidence,
-                    version=prev.version or d.version,
-                )
+        """
+        Aggregate detections using intelligent confidence boosting.
+        
+        Uses DetectionAggregator to:
+        1. Merge duplicate detections (same technology)
+        2. Boost confidence based on number of evidence sources
+        3. Weight evidence by type reliability
+        """
+        # Use the new aggregator for intelligent confidence boosting
+        aggregated = DetectionAggregator.aggregate(detections)
+        
+        # Cap all confidences at 1.0 (recreate as frozen dataclass is immutable)
+        from dataclasses import replace
+        capped = []
+        for detection in aggregated:
+            if detection.confidence > 1.0:
+                capped_detection = replace(detection, confidence=min(detection.confidence, 1.0))
+                capped.append(capped_detection)
             else:
-                by_name[d.name] = d
-        return list(by_name.values())
+                capped.append(detection)
+        
+        logger = logging.getLogger(__name__)
+        logger.debug(
+            f"Aggregated {len(detections)} detections → {len(aggregated)} unique technologies"
+        )
+        
+        return capped if capped else aggregated
 
 # Example usage (for testing)
 async def main():

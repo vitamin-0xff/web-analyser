@@ -35,9 +35,13 @@ class CertificateAnalyzer:
         
         tls_data = context.tls
         
-        # Extract certificate data
-        issuer = tls_data.get('issuer', '').lower()
-        cn = tls_data.get('cn', '').lower()
+        # Extract certificate data (handle dict values)
+        issuer_raw = tls_data.get('issuer', '')
+        issuer = str(issuer_raw).lower() if issuer_raw else ''
+        
+        cn_raw = tls_data.get('cn', '')
+        cn = str(cn_raw).lower() if cn_raw else ''
+        
         san = tls_data.get('san', [])
         san_lower = [s.lower() for s in san] if san else []
         

@@ -1,0 +1,90 @@
+# Source code and configuration file leak detection
+# Used by source_code_leak.py to probe for exposed files
+
+leak_paths:
+  # Git repository files
+  - /.git/config
+  - /.git/HEAD
+  - /.github/workflows
+
+  # Environment files
+  - /.env
+  - /.env.local
+  - /.env.development
+  - /.env.production
+  - /.env.example
+  - /.env.sample
+
+  # Package manifests (Node.js)
+  - /package.json
+  - /package-lock.json
+  - /yarn.lock
+  - /pnpm-lock.yaml
+
+  # PHP project files
+  - /composer.json
+  - /composer.lock
+
+  # Python project files
+  - /requirements.txt
+  - /Pipfile
+  - /Pipfile.lock
+  - /poetry.lock
+  - /setup.py
+
+  # Java/Maven project files
+  - /pom.xml
+  - /gradle.properties
+  - /build.gradle
+
+  # Ruby project files
+  - /Gemfile
+  - /Gemfile.lock
+
+  # Go project files
+  - /go.mod
+  - /go.sum
+
+  # Configuration files
+  - /.htaccess
+  - /web.config
+  - /nginx.conf
+  - /apache2.conf
+  - /supervisord.conf
+
+  # Docker files
+  - /Dockerfile
+  - /docker-compose.yml
+  - /docker-compose.yaml
+
+  # Build and deployment files
+  - /.gitlab-ci.yml
+  - /.github/workflows/
+  - /Jenkinsfile
+  - /.circleci/config.yml
+  - /.travis.yml
+
+  # IDE and version control
+  - /.vscode/settings.json
+  - /.idea/config.xml
+  - /.editorconfig
+
+  # Server configuration
+  - /wp-config.php
+  - /config.php
+  - /configuration.php
+  - /settings.py
+  - /config.yml
+
+  # AWS and cloud
+  - /.aws/credentials
+  - /cloudformation.json
+  - /terraform.tfvars
+
+  # Application-specific
+  - /nuxt.config.js
+  - /next.config.js
+  - /gatsby-config.js
+  - /webpack.config.js
+  - /rollup.config.js
+  - /vite.config.js
