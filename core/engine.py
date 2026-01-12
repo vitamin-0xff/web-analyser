@@ -9,6 +9,7 @@ from fetch.dns_client import get_dns_records
 from fetch.tls_client import get_tls_info
 import asyncio
 from typing import List, Any, Dict, Tuple, Optional
+import asyncio
 
 from analyzers.headers import HeadersAnalyzer
 from analyzers.html import HtmlAnalyzer
@@ -326,9 +327,16 @@ class Engine:
             ("assets", self.assets_analyzer),
         ]
         
+        analyzer_timeout = 10  # seconds per analyzer to avoid hangs
+
         for name, analyzer in analyzers:
-            logger.debug(f"Running {name} analyzer")
-            result = await analyzer.analyze(context)
+            logger.info(f"Running {name} analyzer")
+            try:
+                result = await asyncio.wait_for(analyzer.analyze(context), timeout=analyzer_timeout)
+            except asyncio.TimeoutError:
+                logger.warning(f"{name} analyzer timed out after {analyzer_timeout}s")
+                continue
+
             if result:
                 logger.debug(f"{name} analyzer found {len(result)} technologies")
                 detections.extend(result)
