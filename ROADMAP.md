@@ -36,21 +36,21 @@ Address slow scan issues and improve efficiency:
 - [ ] Add progress indicators
 
 ### 3. Version Detection Enhancement 🔍
-**Status**: In Progress
+**Status**: ✅ Complete - Core implementation done
 
-Many detections show `"version": null` - improve version extraction:
-- Add version extraction patterns to existing rules
-- Parse version from meta tags, JS comments, file paths
-- Extract from library URLs (`jquery-3.6.0.min.js`)
-- Version-specific patterns in HTML/JS
+Enhanced version extraction to populate the `version` field in detections:
+- ✅ Added version_pattern field to YAML rules (JavaScript, CSS)
+- ✅ Implemented version extractor utility functions (6 functions in core/version_utils.py)
+- ✅ Updated JsAnalyzer to extract versions from script URLs
+- ✅ Updated CssAnalyzer to extract versions from stylesheet URLs
+- ✅ Updated MetaTagsAnalyzer to extract versions from generator tags
+- ✅ Verified with real websites: jQuery 3.7.1, DaisyUI 5.5 detected correctly
+- ✅ All 32 tests passing
 
-**Implementation Tasks**:
-- [ ] Add version regex patterns to YAML rules
-- [ ] Implement version extractor utility functions
-- [ ] Update analyzers to extract versions from URLs
-- [ ] Parse versions from meta tags (generator, application-version)
-- [ ] Extract versions from JS comments and inline code
-- [ ] Add version detection tests
+**Future Enhancements**:
+- Add version patterns to backend YAML rules (PHP, Node.js, etc.)
+- Extract versions from JS comments and inline code
+- Add more CMS-specific version detection patterns
 
 ### 4. Output Formatters 📊
 **Status**: Not Started
