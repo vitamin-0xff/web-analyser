@@ -27,27 +27,45 @@ def _flatten_cert_info(cert_field_list: Tuple[Tuple[Tuple[str, str], ...], ...])
             result[key] = value
     return result
 
+def _filter_technologies_by_rule_types(technologies: List[Technology], allowed: set[str]) -> List[Technology]:
+    """Return Technology objects containing only evidence rules of allowed types.
+
+    This avoids duplicating technologies per rule and reduces analyzer work.
+    """
+    filtered: List[Technology] = []
+    for tech in technologies:
+        subset = [r for r in tech.evidence_rules if r.type in allowed]
+        if subset:
+            filtered.append(
+                Technology(
+                    name=tech.name,
+                    category=tech.category,
+                    evidence_rules=subset,
+                    version=tech.version,
+                )
+            )
+    return filtered
+
 class Engine:
     def __init__(self):
         self.rules = load_rules()
-
         self.headers_analyzer = HeadersAnalyzer(
-            [tech for tech in self.rules for rule in tech.evidence_rules if rule.type == "header"]
+            _filter_technologies_by_rule_types(self.rules, {"header"})
         )
         self.html_analyzer = HtmlAnalyzer(
-            [tech for tech in self.rules for rule in tech.evidence_rules if rule.type in ["html_pattern", "html_comment"]]
+            _filter_technologies_by_rule_types(self.rules, {"html_pattern", "html_comment"})
         )
         self.js_analyzer = JsAnalyzer(
-            [tech for tech in self.rules for rule in tech.evidence_rules if rule.type in ["script_src", "js_global"]]
+            _filter_technologies_by_rule_types(self.rules, {"script_src", "js_global"})
         )
         self.cookies_analyzer = CookiesAnalyzer(
-            [tech for tech in self.rules for rule in tech.evidence_rules if rule.type == "cookie"]
+            _filter_technologies_by_rule_types(self.rules, {"cookie"})
         )
         self.network_analyzer = NetworkAnalyzer(
-            [tech for tech in self.rules for rule in tech.evidence_rules if rule.type in ["tls_issuer", "dns_record"]]
+            _filter_technologies_by_rule_types(self.rules, {"tls_issuer", "dns_record"})
         )
         self.css_analyzer = CssAnalyzer(
-            [tech for tech in self.rules for rule in tech.evidence_rules if rule.type in ["css_link", "html_pattern"]]
+            _filter_technologies_by_rule_types(self.rules, {"css_link", "html_pattern"})
         )
         
 
@@ -114,7 +132,27 @@ class Engine:
         detections.extend(await self.cookies_analyzer.analyze(context))
         detections.extend(await self.network_analyzer.analyze(context))
         detections.extend(await self.css_analyzer.analyze(context))
-        return detections
+        return self._aggregate_detections(detections)
+
+    def _aggregate_detections(self, detections: List[Detection]) -> List[Detection]:
+        """Combine multiple hits per technology and sum confidences capped at 1.0."""
+        by_name: Dict[str, Detection] = {}
+        for d in detections:
+            prev = by_name.get(d.name)
+            if prev:
+                total = min(1.0, prev.confidence + d.confidence)
+                # Keep strongest evidence; merge version if one exists
+                strongest = d if d.confidence > prev.confidence else prev
+                by_name[d.name] = Detection(
+                    name=prev.name,
+                    category=prev.category,
+                    confidence=total,
+                    evidence=strongest.evidence,
+                    version=prev.version or d.version,
+                )
+            else:
+                by_name[d.name] = d
+        return list(by_name.values())
 
 # Example usage (for testing)
 async def main():

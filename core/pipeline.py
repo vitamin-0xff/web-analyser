@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from core.context import ScanContext
