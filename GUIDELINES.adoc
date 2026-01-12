@@ -5,26 +5,33 @@
 == 1. System Description (App Purpose)
 
 === Role
-A passive technology-fingerprinting engine that analyzes websites to identify underlying technologies such as frontend frameworks, backend platforms, infrastructure, analytics tools, CMSs, and security components.
+A passive technology-fingerprinting engine that analyzes websites to identify 150+ underlying technologies including frontend frameworks, backend platforms, infrastructure, analytics tools, CMSs, CDNs, security components, fonts, icons, and hosting providers.
 
 === Core Objective
 Given one or more URLs, the system inspects:
 
 * HTTP headers
-* HTML structure
-* JavaScript variables and libraries
-* Network resources
+* HTML structure and patterns
+* JavaScript variables, libraries, and inline scripts
+* CSS frameworks and patterns
+* Network resources (fonts, images, videos, icons)
 * DNS and TLS metadata
-* Any Level you know we didn't mention
+* Cookies and forms
+* Favicon hashes
+* SRI (Subresource Integrity) hashes
+* HTML/JS/CSS comments
+* Asset URLs (CDNs, hosting platforms)
 
 It returns a structured, explainable list of detected technologies with confidence scores.
 
 === Expected Capabilities
 * Stateless execution per target
 * Deterministic output for identical inputs
-* Modular detection rules
-* Pluggable analyzers (headers, DOM, JS, DNS, TLS)
+* Modular detection rules (10 YAML files)
+* 19 pluggable analyzers (headers, HTML, JS, CSS, DNS, TLS, cookies, forms, SRI, favicon, comments, assets, etc.)
 * CLI-first, automation-friendly design
+* Async/concurrent I/O operations
+* Confidence aggregation with evidence provenance
 
 === Output Contract
 Each detection must include:
@@ -33,46 +40,68 @@ Each detection must include:
 * `category`
 * `version` (if inferred)
 * `confidence`
-* `evidence`
+* `evidence` (type, value, pattern)
 
 
 == 2. High-Level Architecture
 
 [source]
 ----
-cli/
- └── main.py
+main.py                  # CLI entry point
 
 core/
- ├── engine.py
- ├── context.py
- └── pipeline.py
+ ├── engine.py           # Orchestration, 19 analyzers
+ ├── context.py          # Immutable ScanContext
+ └── pipeline.py         # Analyzer pipeline
 
 fetch/
- ├── http_client.py
- ├── dns_client.py
- └── tls_client.py
+ ├── http_client.py      # HTTP fetching (httpx)
+ ├── dns_client.py       # DNS resolution (dnspython)
+ └── tls_client.py       # TLS certificate info
 
 analyzers/
- ├── headers.py
+ ├── headers.py          # Standard (6)
  ├── html.py
+ ├── meta_tags.py
  ├── js.py
+ ├── css.py
+ ├── http_details.py
+ ├── network.py          # Extended (7)
  ├── cookies.py
- └── network.py
+ ├── robots_sitemap.py
+ ├── endpoints.py
+ ├── structured_data.py
+ ├── pwa.py
+ ├── tls_client.py
+ ├── script_content.py   # Phase 1 Passive (5)
+ ├── favicon.py
+ ├── forms.py
+ ├── sri.py
+ ├── comments.py
+ └── assets.py           # Assets (1)
 
 rules/
- ├── frontend.yaml
- ├── backend.yaml
- ├── analytics.yaml
- └── cms.yaml
+ ├── backend.yaml        # 33 technologies
+ ├── frontend.yaml       # 35 technologies
+ ├── javascript.yaml
+ ├── css.yaml            # 27 frameworks
+ ├── cookies.yaml        # 29 platforms
+ ├── network.yaml
+ ├── favicon.yaml        # 5 CMS
+ ├── forms.yaml          # 10 frameworks
+ ├── sri.yaml            # 10 libraries
+ ├── assets.yaml         # 30+ rules
+ └── rules_loader.py
 
 models/
  ├── detection.py
  └── technology.py
 
-output/
- ├── json_formatter.py
- └── table_formatter.py
+tests/
+ ├── test_engine.py
+ ├── test_new_analyzers.py
+ ├── test_passive_analyzers.py
+ └── test_assets_analyzer.py
 ----
 
 == 3. Core Design Principles
@@ -143,16 +172,33 @@ evidence:
 === Detection Types (Hits)
 Multiple weak signals are preferred over a single strong signal.
 
-Supported hit types:
+Supported hit types (27+):
 * header
-* cookie
 * html_pattern
-* js_global
-* script_src
 * meta_tag
-* response_body
+* js_url
+* js_global
+* css_url
+* css_class
+* cookie_name
+* cookie_domain
+* dns_txt
+* dns_mx
+* dns_ns
 * tls_issuer
-* dns_record
+* tls_subject
+* http_version
+* server_timing_entry
+* script_src_pattern
+* favicon_hash
+* form_action_pattern
+* hidden_field_name
+* sri_hash
+* script_content_pattern
+* inline_js_variable
+* font_src_pattern
+* image_src_pattern
+* video_embed_pattern
 
 Each hit contributes to a confidence score.
 
@@ -162,6 +208,7 @@ Each hit contributes to a confidence score.
 * Each hit has a weighted value
 * Total confidence is capped at `1.0`
 * Detection is valid only above a threshold
+* Formula: C_total = min(1.0, Σ confidence_i)
 
 [source,python]
 ----
@@ -181,16 +228,32 @@ All analyzers operate on a shared, immutable context.
 @dataclass(frozen=True)
 class ScanContext:
     url: str
-    headers: dict
-    html: str
-    cookies: dict
-    scripts: list[str]
-    js_globals: set[str]
-    tls: TLSInfo | None
+    status_code: int | None
+    headers: dict[str, str]
+    body: str
+    html: BeautifulSoup | None
+    scripts: list[str]              # <script src="...">
+    stylesheets: list[str]          # <link rel="stylesheet" href="...">
+    meta_tags: dict[str, str]
+    cookies: dict[str, dict]
+    dns_records: dict[str, list]    # A, MX, TXT, NS
+    tls_info: dict | None
+    json_ld: list[dict]
+    pwa_manifest: dict | None
+    robots_txt: str | None
+    inline_scripts: list[str]       # <script>...</script> content
+    forms: list[dict]               # Action, method, input fields
+    comments: list[str]             # HTML/JS/CSS comments
+    favicon_hash: str | None        # MD5 hash of favicon
+    sri_hashes: list[dict]          # {algorithm, hash, url}
+    asset_urls: dict[str, list]     # fonts, images, videos, icons
 ----
 
 Benefits:
 * No side effects
+* Immutable after creation (frozen=True)
+* Pure analyzer functions
+* Comprehensive data from multiple sources
 * Explicit dependencies
 * High testability
 
