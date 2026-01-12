@@ -1,0 +1,125 @@
+# Certificate-based detection rules for cloud providers and CDNs
+# Used by certificate.py to detect hosted services from SSL certificates
+
+- name: Let's Encrypt
+  category: SSL/TLS Provider
+  evidence:
+    - type: certificate_issuer
+      pattern: "Let's Encrypt"
+      confidence: 0.95
+
+- name: AWS Certificate Manager
+  category: Cloud Platform
+  evidence:
+    - type: certificate_issuer
+      pattern: "Amazon"
+      confidence: 0.9
+    - type: certificate_cn
+      pattern: "\.cloudfront\.net|\.amazonaws\.com"
+      confidence: 0.95
+
+- name: Google Cloud
+  category: Cloud Platform
+  evidence:
+    - type: certificate_issuer
+      pattern: "Google|GTS"
+      confidence: 0.8
+    - type: certificate_cn
+      pattern: "\.appspot\.com|\.goog|google\.com"
+      confidence: 0.95
+
+- name: Microsoft Azure
+  category: Cloud Platform
+  evidence:
+    - type: certificate_issuer
+      pattern: "Microsoft|DigiCert"
+      confidence: 0.7
+    - type: certificate_cn
+      pattern: "\.azurewebsites\.net|\.cloudapp\.azure\.com|\.azure\.com"
+      confidence: 0.95
+
+- name: Cloudflare
+  category: CDN
+  evidence:
+    - type: certificate_cn
+      pattern: "\.cloudflare\.com"
+      confidence: 0.95
+    - type: certificate_issuer
+      pattern: "Cloudflare"
+      confidence: 0.9
+
+- name: Akamai
+  category: CDN
+  evidence:
+    - type: certificate_cn
+      pattern: "\.akamai\.com|\.akamaized\.net"
+      confidence: 0.95
+
+- name: Fastly
+  category: CDN
+  evidence:
+    - type: certificate_cn
+      pattern: "\.fastly\.net"
+      confidence: 0.95
+    - type: certificate_issuer
+      pattern: "Fastly"
+      confidence: 0.9
+
+- name: DigitalOcean
+  category: Cloud Platform
+  evidence:
+    - type: certificate_cn
+      pattern: "\.digitalocean\.app|\.do\.app"
+      confidence: 0.95
+
+- name: Heroku
+  category: Cloud Platform
+  evidence:
+    - type: certificate_cn
+      pattern: "\.herokuapp\.com"
+      confidence: 0.95
+
+- name: GitHub Pages
+  category: Hosting Platform
+  evidence:
+    - type: certificate_cn
+      pattern: "\.github\.io"
+      confidence: 0.95
+    - type: certificate_issuer
+      pattern: "DigiCert"
+      confidence: 0.5
+
+- name: Netlify
+  category: Hosting Platform
+  evidence:
+    - type: certificate_cn
+      pattern: "\.netlify\.app"
+      confidence: 0.95
+
+- name: Vercel
+  category: Hosting Platform
+  evidence:
+    - type: certificate_cn
+      pattern: "\.vercel\.app"
+      confidence: 0.95
+
+- name: GoDaddy
+  category: Domain Registrar
+  evidence:
+    - type: certificate_issuer
+      pattern: "GoDaddy|StarField"
+      confidence: 0.8
+
+- name: Comodo
+  category: SSL/TLS Provider
+  evidence:
+    - type: certificate_issuer
+      pattern: "Comodo|COMODO"
+      confidence: 0.9
+
+- name: DigiCert
+  category: SSL/TLS Provider
+  evidence:
+    - type: certificate_issuer
+      pattern: "DigiCert|Thawte|VeriSign"
+      confidence: 0.9

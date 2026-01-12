@@ -40,11 +40,23 @@ class APIProbeAnalyzer:
             endpoint = f"{base_url}{path}"
             
             try:
-                # Try GET request
-                response = await fetch_url(endpoint, timeout=5)
+                # Try multiple HTTP methods
+                methods_to_try = ['GET', 'HEAD', 'OPTIONS']
+                response = None
                 
-                if response.status_code in [200, 201, 401, 403]:  # Valid responses
-                    logger.debug(f"API endpoint found: {endpoint} (status: {response.status_code})")
+                for method in methods_to_try:
+                    try:
+                        response = await fetch_url(endpoint, method=method, timeout=5)
+                        
+                        if response.status_code in [200, 201, 401, 403, 204]:  # Valid responses
+                            logger.debug(f"API endpoint found: {endpoint} (status: {response.status_code}, method: {method})")
+                            break
+                    except Exception:
+                        # Try next method if this one fails
+                        continue
+                
+                if not response or response.status_code >= 404:
+                    continue
                     
                     # Analyze response
                     response_data = {

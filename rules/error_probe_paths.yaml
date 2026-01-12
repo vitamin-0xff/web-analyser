@@ -13,7 +13,31 @@ error_paths:
   - /admin/config
 
 error_params:
+  # Basic error triggers
   - "?id=999999"
   - "?debug=true"
   - "?error=1"
   - "?test=invalid"
+  
+  # SQL injection patterns (for stack trace detection)
+  - "?id=' OR '1'='1"
+  - "?id=1 AND 1=1"
+  - "?id=1' AND '1'='1"
+  
+  # Path traversal patterns
+  - "?file=../../etc/passwd"
+  - "?path=../../../../etc/passwd"
+  
+  # XXE payload (detects XML parsers)
+  - "?xml=<!DOCTYPE foo [<!ENTITY xxe SYSTEM 'file:///etc/passwd'>]>"
+  
+  # Command injection patterns
+  - "?cmd=whoami"
+  - "?exec=id"
+
+# Additional headers that might trigger errors
+error_headers:
+  "X-Forwarded-For": "999.999.999.999"
+  "X-Original-URL": "/nonexistent"
+  "X-Rewrite-URL": "/nonexistent"
+
