@@ -111,7 +111,9 @@
   category: Web Framework
   evidence:
     - type: api_header
-      name: Server
+      name: Server[Specify your license here, e.g., MIT, Apache 2.0]
+
+
       pattern: 'Kestrel'
       confidence: 0.9
     - type: error_message

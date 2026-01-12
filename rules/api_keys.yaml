@@ -1,0 +1,214 @@
+# API Key and Credential Detection Rules
+# WARNING: These rules detect exposed secrets - use responsibly!
+# Only scan targets you own or have explicit permission to scan.
+
+# AWS Credentials
+- name: AWS Access Key
+  category: Cloud Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: 'AKIA[0-9A-Z]{16}'
+      confidence: 0.95
+
+- name: AWS Secret Key
+  category: Cloud Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: '(?i)aws_secret_access_key.*?[a-zA-Z0-9/+=]{40}'
+      confidence: 0.9
+
+# Google Credentials
+- name: Google API Key
+  category: Cloud Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: 'AIza[0-9A-Za-z\-_]{35}'
+      confidence: 0.95
+
+- name: Google OAuth Token
+  category: Cloud Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: '\d{12}-[a-z0-9]{32}\.apps\.googleusercontent\.com'
+      confidence: 0.9
+
+# Stripe API Keys
+- name: Stripe API Key
+  category: Payment Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: 'sk_(live|test)_[0-9a-zA-Z]{20,}'
+      confidence: 0.95
+
+- name: Stripe Publishable Key
+  category: Payment Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: 'pk_(live|test)_[0-9a-zA-Z]{20,}'
+      confidence: 0.95
+
+# GitHub Tokens
+- name: GitHub Personal Access Token
+  category: VCS Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: 'ghp_[0-9a-zA-Z]{36}'
+      confidence: 0.95
+
+- name: GitHub OAuth Token
+  category: VCS Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: 'gho_[0-9a-zA-Z]{36}'
+      confidence: 0.95
+
+# Private Keys
+- name: RSA Private Key
+  category: Cryptographic Keys
+  evidence:
+    - type: private_key
+      pattern: '-----BEGIN RSA PRIVATE KEY-----[\s\S]+?-----END RSA PRIVATE KEY-----'
+      confidence: 1.0
+
+- name: DSA Private Key
+  category: Cryptographic Keys
+  evidence:
+    - type: private_key
+      pattern: '-----BEGIN DSA PRIVATE KEY-----[\s\S]+?-----END DSA PRIVATE KEY-----'
+      confidence: 1.0
+
+- name: EC Private Key
+  category: Cryptographic Keys
+  evidence:
+    - type: private_key
+      pattern: '-----BEGIN EC PRIVATE KEY-----[\s\S]+?-----END EC PRIVATE KEY-----'
+      confidence: 1.0
+
+- name: OpenSSH Private Key
+  category: Cryptographic Keys
+  evidence:
+    - type: private_key
+      pattern: '-----BEGIN OPENSSH PRIVATE KEY-----[\s\S]+?-----END OPENSSH PRIVATE KEY-----'
+      confidence: 1.0
+
+# JWT Tokens
+- name: JWT Token
+  category: Authentication Tokens
+  evidence:
+    - type: api_key_pattern
+      pattern: 'eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+'
+      confidence: 0.8
+
+# API Keys - Generic Patterns
+- name: Generic API Key
+  category: API Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: '(?i)(api[_-]?key|apikey|api_secret|api-secret)["\'\s:=]+[a-zA-Z0-9\-_]{20,}'
+      confidence: 0.6
+
+- name: Authorization Header
+  category: Authentication Tokens
+  evidence:
+    - type: api_key_pattern
+      pattern: '(?i)authorization["\'\s:=]+(Bearer|Token|Basic)\s+[a-zA-Z0-9\-._~+/]+'
+      confidence: 0.7
+
+# Database Connection Strings
+- name: MySQL Connection String
+  category: Database Credentials
+  evidence:
+    - type: connection_string
+      pattern: 'mysql://[^:]+:[^@]+@[^\s"]+'
+      confidence: 0.9
+
+- name: PostgreSQL Connection String
+  category: Database Credentials
+  evidence:
+    - type: connection_string
+      pattern: 'postgres(ql)?://[^:]+:[^@]+@[^\s"]+'
+      confidence: 0.9
+
+- name: MongoDB Connection String
+  category: Database Credentials
+  evidence:
+    - type: connection_string
+      pattern: 'mongodb(\+srv)?://[^:]*:[^@]*@[^\s"]+'
+      confidence: 0.9
+
+- name: Redis Connection String
+  category: Database Credentials
+  evidence:
+    - type: connection_string
+      pattern: 'redis://[^:]*:[^@]*@[^\s"]+'
+      confidence: 0.9
+
+# Slack Tokens
+- name: Slack Bot Token
+  category: Chat Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: 'xoxb-[0-9]+-[0-9]+-[a-zA-Z0-9_-]+'
+      confidence: 0.95
+
+- name: Slack App Token
+  category: Chat Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: 'xapp-1-[a-zA-Z0-9_-]+'
+      confidence: 0.95
+
+# PagerDuty Tokens
+- name: PagerDuty Token
+  category: Incident Management Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: '[0-9a-z]{20}\+[0-9a-z]{20}'
+      confidence: 0.7
+
+# Twilio Credentials
+- name: Twilio API Key
+  category: Communications Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: 'SK[a-z0-9]{32}'
+      confidence: 0.7
+
+# SendGrid API Key
+- name: SendGrid API Key
+  category: Email Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: 'SG\.[a-zA-Z0-9_-]{22}\.[a-zA-Z0-9_-]{43}'
+      confidence: 0.95
+
+# MailChimp API Key
+- name: MailChimp API Key
+  category: Email Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: '[a-z0-9]{32}-us\d{1,2}'
+      confidence: 0.8
+
+# Docker Registry Tokens
+- name: Docker Registry Token
+  category: Container Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: 'docker://[a-zA-Z0-9:_-]+@[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+'
+      confidence: 0.7
+
+# Generic Passwords in Config
+- name: Config File Password
+  category: Application Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: '(?i)(password|passwd|pwd)["\'\s:=]+[^\s"\';,]+'
+      confidence: 0.5
+
+- name: Database Password
+  category: Database Credentials
+  evidence:
+    - type: api_key_pattern
+      pattern: '(?i)db[_-]?password["\'\s:=]+[^\s"\';,]+'
+      confidence: 0.6

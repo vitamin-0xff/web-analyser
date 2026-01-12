@@ -35,6 +35,7 @@ import analyzers.assets
 import analyzers.graphql
 import analyzers.api_probe
 import analyzers.error_probe
+import analyzers.api_keys
 
 from models.detection import Detection, Evidence
 from models.technology import Technology, EvidenceRule

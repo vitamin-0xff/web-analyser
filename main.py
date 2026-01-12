@@ -62,10 +62,10 @@ def main():
     
     # Exclude active analyzers by default unless --active flag is set
     if not args.active:
-        active_analyzers = {'graphql', 'api_probe', 'error_probe'}
+        active_analyzers = {'graphql', 'api_probe', 'error_probe', 'api_keys'}
         exclude_set.update(active_analyzers)
         if not args.exclude:  # Only log if user didn't explicitly exclude anything
-            logger.info("Active detection disabled (use --active to enable GraphQL, API probing, error triggering)")
+            logger.info("Active detection disabled (use --active to enable GraphQL, API probing, error triggering, API key scanning)")
     
     available_analyzers = set(AnalyzerRegistry.get_all_names())
     invalid_excludes = exclude_set - available_analyzers
