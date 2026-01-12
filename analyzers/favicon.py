@@ -2,8 +2,10 @@ from typing import List
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
 
+@AnalyzerRegistry.register("favicon", lambda rules: filter_by_rule_types(rules, {"favicon_hash"}))
 class FaviconAnalyzer:
     """Match favicon hash against known technology signatures."""
     

@@ -3,8 +3,10 @@ import re
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
 
+@AnalyzerRegistry.register("endpoints", lambda rules: filter_by_rule_types(rules, {"graphql_endpoint", "openapi_url", "api_pattern"}))
 class EndpointsAnalyzer:
     """Analyze API endpoints, GraphQL, OpenAPI references."""
     

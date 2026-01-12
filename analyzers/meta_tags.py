@@ -4,8 +4,13 @@ from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
 from core.version_utils import extract_version_from_meta_tag
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
 
+@AnalyzerRegistry.register(
+    "meta_tags",
+    lambda rules: filter_by_rule_types(rules, {"meta_name", "meta_property"})
+)
 class MetaTagsAnalyzer:
     """Analyze meta tags for CMS/framework signatures."""
     

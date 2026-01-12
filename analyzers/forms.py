@@ -3,8 +3,10 @@ import re
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
 
+@AnalyzerRegistry.register("forms", lambda rules: filter_by_rule_types(rules, {"form_action_pattern", "hidden_field_name"}))
 class FormsAnalyzer:
     """Detect technologies via form attributes, action URLs, and hidden field names."""
     

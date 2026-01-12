@@ -3,8 +3,10 @@ import re
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
 
+@AnalyzerRegistry.register("script_content", lambda rules: filter_by_rule_types(rules, {"script_content_pattern", "inline_js_variable"}))
 class ScriptContentAnalyzer:
     """Analyze inline script blocks for framework initialization patterns and config objects."""
     

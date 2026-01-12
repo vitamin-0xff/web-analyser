@@ -19,7 +19,12 @@ MAX_HTML_SCAN_LENGTH = 200_000
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
+@AnalyzerRegistry.register(
+    "html",
+    lambda rules: filter_by_rule_types(rules, {"html_pattern", "html_comment"})
+)
 class HtmlAnalyzer:
     def __init__(self, rules: List[Technology]):
         self.rules = rules

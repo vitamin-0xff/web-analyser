@@ -4,7 +4,12 @@ from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
 from core.version_utils import extract_version_from_url
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
+@AnalyzerRegistry.register(
+    "css",
+    lambda rules: filter_by_rule_types(rules, {"css_link", "html_pattern"})
+)
 class CssAnalyzer:
     def __init__(self, rules: List[Technology]):
         self.rules = rules

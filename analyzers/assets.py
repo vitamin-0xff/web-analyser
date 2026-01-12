@@ -3,8 +3,10 @@ import re
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
 
+@AnalyzerRegistry.register("assets", lambda rules: filter_by_rule_types(rules, {"css_link", "font_src_pattern", "image_src_pattern", "html_pattern", "script_src", "header", "dns_record"}))
 class AssetsAnalyzer:
     """Analyze asset URLs (fonts, icons, images, CDNs) for technology signatures."""
     

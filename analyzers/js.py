@@ -4,7 +4,12 @@ from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
 from core.version_utils import extract_version_from_url
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
+@AnalyzerRegistry.register(
+    "js",
+    lambda rules: filter_by_rule_types(rules, {"script_src", "js_global"})
+)
 class JsAnalyzer:
     def __init__(self, rules: List[Technology]):
         self.rules = rules

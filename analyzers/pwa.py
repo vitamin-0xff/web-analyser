@@ -3,8 +3,10 @@ import re
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
 
+@AnalyzerRegistry.register("pwa", lambda rules: filter_by_rule_types(rules, {"pwa_manifest", "service_worker"}))
 class PWAAnalyzer:
     """Analyze Progressive Web App manifest and service worker usage."""
     

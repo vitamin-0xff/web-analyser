@@ -3,7 +3,12 @@ import re
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
+@AnalyzerRegistry.register(
+    "network",
+    lambda rules: filter_by_rule_types(rules, {"tls_issuer", "dns_record"})
+)
 class NetworkAnalyzer:
     def __init__(self, rules: List[Technology]):
         self.rules = rules

@@ -2,8 +2,10 @@ from typing import List
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
 
+@AnalyzerRegistry.register("http_details", lambda rules: filter_by_rule_types(rules, {"http_version", "server_timing"}))
 class HTTPDetailsAnalyzer:
     """Analyze HTTP response metadata for framework/version hints."""
     

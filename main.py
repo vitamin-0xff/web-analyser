@@ -3,6 +3,7 @@ import argparse
 import json
 import logging
 from core.engine import Engine
+from core.analyzer_registry import AnalyzerRegistry
 
 def _truncate_value(value: str, max_length: int = 200) -> str:
     """Truncate a string to max_length, adding ellipsis if truncated."""
@@ -28,10 +29,12 @@ def _serialize_detection(d, value_max_length: int = 200):
 
 def main():
     parser = argparse.ArgumentParser(description="Website technology fingerprinting CLI")
-    parser.add_argument("url", help="Target URL (e.g., https://example.com)")
+    parser.add_argument("url", nargs="?", help="Target URL (e.g., https://example.com)")
     parser.add_argument("--confidence-threshold", type=float, default=0.0, help="Minimum confidence to include")
     parser.add_argument("--value-max-length", type=int, default=200, help="Maximum length for evidence values (default: 200, use 0 for unlimited)")
     parser.add_argument("--log-level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR"], help="Logging verbosity level (default: INFO)")
+    parser.add_argument("--exclude", type=str, nargs="+", help="Exclude specific analyzers (e.g., --exclude html js cookies)")
+    parser.add_argument("--list-analyzers", action="store_true", help="List all available analyzers and exit")
     args = parser.parse_args()
     
     # Configure logging
@@ -41,11 +44,34 @@ def main():
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     logger = logging.getLogger(__name__)
+    
+    # List analyzers if requested
+    if args.list_analyzers:
+        print("Available analyzers:")
+        for name in AnalyzerRegistry.get_all_names():
+            print(f"  - {name}")
+        return
+    
+    # Require URL if not listing analyzers
+    if not args.url:
+        parser.error("URL is required unless using --list-analyzers")
+    
+    # Validate excluded analyzers
+    exclude_set = set(args.exclude) if args.exclude else set()
+    available_analyzers = set(AnalyzerRegistry.get_all_names())
+    invalid_excludes = exclude_set - available_analyzers
+    if invalid_excludes:
+        logger.error(f"Invalid analyzer names: {', '.join(invalid_excludes)}")
+        logger.info(f"Available analyzers: {', '.join(sorted(available_analyzers))}")
+        return
+    
     logger.info(f"Starting scan of {args.url} with confidence threshold {args.confidence_threshold}")
+    if exclude_set:
+        logger.info(f"Excluding analyzers: {', '.join(sorted(exclude_set))}")
 
     async def run():
         logger = logging.getLogger(__name__)
-        engine = Engine()
+        engine = Engine(exclude_analyzers=exclude_set)
         logger.info("Initialized analysis engine")
         
         logger.info(f"Fetching {args.url}...")

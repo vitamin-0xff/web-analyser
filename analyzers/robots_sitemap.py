@@ -3,8 +3,10 @@ import re
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
 
+@AnalyzerRegistry.register("robots_sitemap", lambda rules: filter_by_rule_types(rules, {"robots_txt", "sitemap_pattern"}))
 class RobotsSitemapAnalyzer:
     """Analyze robots.txt and sitemap.xml for CMS/framework signatures."""
     

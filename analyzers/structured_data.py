@@ -4,8 +4,10 @@ import json
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
 
 
+@AnalyzerRegistry.register("structured_data", lambda rules: filter_by_rule_types(rules, {"json_ld_pattern"}))
 class StructuredDataAnalyzer:
     """Analyze JSON-LD and schema.org structured data."""
     

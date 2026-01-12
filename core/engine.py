@@ -8,28 +8,30 @@ from fetch.http_client import fetch_url
 from fetch.dns_client import get_dns_records
 from fetch.tls_client import get_tls_info
 import asyncio
-from typing import List, Any, Dict, Tuple, Optional
-import asyncio
+from typing import List, Any, Dict, Tuple, Optional, Set
+from core.analyzer_registry import AnalyzerRegistry
 
-from analyzers.headers import HeadersAnalyzer
-from analyzers.html import HtmlAnalyzer
-from analyzers.js import JsAnalyzer
-from analyzers.cookies import CookiesAnalyzer
-from analyzers.network import NetworkAnalyzer
-from analyzers.css import CssAnalyzer
-from analyzers.meta_tags import MetaTagsAnalyzer
-from analyzers.structured_data import StructuredDataAnalyzer
-from analyzers.pwa import PWAAnalyzer
-from analyzers.robots_sitemap import RobotsSitemapAnalyzer
-from analyzers.http_details import HTTPDetailsAnalyzer
-from analyzers.storage import StorageAnalyzer
-from analyzers.endpoints import EndpointsAnalyzer
-from analyzers.script_content import ScriptContentAnalyzer
-from analyzers.favicon import FaviconAnalyzer
-from analyzers.forms import FormsAnalyzer
-from analyzers.sri import SRIAnalyzer
-from analyzers.comments import CommentsAnalyzer
-from analyzers.assets import AssetsAnalyzer
+# Import all analyzers to trigger @AnalyzerRegistry.register decorators
+import analyzers.headers
+import analyzers.html
+import analyzers.js
+import analyzers.cookies
+import analyzers.network
+import analyzers.css
+import analyzers.meta_tags
+import analyzers.structured_data
+import analyzers.pwa
+import analyzers.robots_sitemap
+import analyzers.http_details
+import analyzers.storage
+import analyzers.endpoints
+import analyzers.script_content
+import analyzers.favicon
+import analyzers.forms
+import analyzers.sri
+import analyzers.comments
+import analyzers.assets
+
 from models.detection import Detection, Evidence
 from models.technology import Technology, EvidenceRule
 from rules.rules_loader import load_rules
@@ -64,71 +66,22 @@ def _filter_technologies_by_rule_types(technologies: List[Technology], allowed: 
     return filtered
 
 class Engine:
-    def __init__(self):
+    def __init__(self, exclude_analyzers: Set[str] = None):
+        """Initialize the engine with dynamic analyzer registry.
+        
+        Args:
+            exclude_analyzers: Set of analyzer names to exclude (e.g., {'html', 'js'})
+        """
+        self.logger = logging.getLogger(__name__)
         self.rules = load_rules()
-        self.headers_analyzer = HeadersAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"header"})
-        )
-        self.html_analyzer = HtmlAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"html_pattern", "html_comment"})
-        )
-        self.js_analyzer = JsAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"script_src", "js_global"})
-        )
-        self.cookies_analyzer = CookiesAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"cookie"})
-        )
-        self.network_analyzer = NetworkAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"tls_issuer", "dns_record"})
-        )
-        self.css_analyzer = CssAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"css_link", "html_pattern"})
-        )
-        # NEW: Additional analyzers
-        self.meta_tags_analyzer = MetaTagsAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"meta_name", "meta_property"})
-        )
-        self.structured_data_analyzer = StructuredDataAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"json_ld_pattern"})
-        )
-        self.pwa_analyzer = PWAAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"pwa_manifest", "service_worker"})
-        )
-        self.robots_sitemap_analyzer = RobotsSitemapAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"robots_txt", "sitemap_pattern"})
-        )
-        self.http_details_analyzer = HTTPDetailsAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"http_version", "server_timing"})
-        )
-        self.storage_analyzer = StorageAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"js_storage_key"})
-        )
-        self.endpoints_analyzer = EndpointsAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"graphql_endpoint", "openapi_url", "api_pattern"})
-        )
-        # PHASE 1: Passive analyzers
-        self.script_content_analyzer = ScriptContentAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"script_content_pattern", "inline_js_variable"})
-        )
-        self.favicon_analyzer = FaviconAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"favicon_hash"})
-        )
-        self.forms_analyzer = FormsAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"form_action_pattern", "hidden_field_name"})
-        )
-        self.sri_analyzer = SRIAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"sri_hash"})
-        )
-        self.comments_analyzer = CommentsAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {"html_comment", "css_comment", "js_comment"})
-        )
-        # Assets analyzer
-        self.assets_analyzer = AssetsAnalyzer(
-            _filter_technologies_by_rule_types(self.rules, {
-                "css_link", "font_src_pattern", "image_src_pattern", 
-                "html_pattern", "script_src", "header", "dns_record"
-            })
-        )
+        self.logger.info(f"Loaded {len(self.rules)} technology rules")
+        
+        # Instantiate all registered analyzers dynamically
+        self.analyzers = AnalyzerRegistry.instantiate_all(self.rules, exclude=exclude_analyzers)
+        self.logger.info(f"Initialized {len(self.analyzers)} analyzers")
+        
+        if exclude_analyzers:
+            self.logger.info(f"Excluded analyzers: {', '.join(sorted(exclude_analyzers))}")
 
     async def scan_url(self, url: str) -> ScanContext:
         logger = logging.getLogger(__name__)
@@ -305,36 +258,17 @@ class Engine:
         logger = logging.getLogger(__name__)
         detections: List[Detection] = []
         
-        analyzers = [
-            ("headers", self.headers_analyzer),
-            ("html", self.html_analyzer),
-            ("js", self.js_analyzer),
-            ("cookies", self.cookies_analyzer),
-            ("network", self.network_analyzer),
-            ("css", self.css_analyzer),
-            ("meta_tags", self.meta_tags_analyzer),
-            ("structured_data", self.structured_data_analyzer),
-            ("pwa", self.pwa_analyzer),
-            ("robots_sitemap", self.robots_sitemap_analyzer),
-            ("http_details", self.http_details_analyzer),
-            ("storage", self.storage_analyzer),
-            ("endpoints", self.endpoints_analyzer),
-            ("script_content", self.script_content_analyzer),
-            ("favicon", self.favicon_analyzer),
-            ("forms", self.forms_analyzer),
-            ("sri", self.sri_analyzer),
-            ("comments", self.comments_analyzer),
-            ("assets", self.assets_analyzer),
-        ]
-        
         analyzer_timeout = 10  # seconds per analyzer to avoid hangs
 
-        for name, analyzer in analyzers:
+        for name, analyzer in self.analyzers.items():
             logger.info(f"Running {name} analyzer")
             try:
                 result = await asyncio.wait_for(analyzer.analyze(context), timeout=analyzer_timeout)
             except asyncio.TimeoutError:
                 logger.warning(f"{name} analyzer timed out after {analyzer_timeout}s")
+                continue
+            except Exception as e:
+                logger.error(f"Error in {name} analyzer: {e}", exc_info=True)
                 continue
 
             if result:
