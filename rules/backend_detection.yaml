@@ -6,23 +6,48 @@
   evidence:
     - type: cookie
       name: "t"
-      confidence: 0.4
+      confidence: 0.3
     - type: cookie
       name: "s"
-      confidence: 0.4
+      confidence: 0.3
     - type: cookie
       name: "u"
-      confidence: 0.4
+      confidence: 0.3
 
+# Django Framework Detection
+- name: Django
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "csrftoken"
+      confidence: 0.95
+    - type: cookie
+      name: "sessionid"
+      confidence: 0.95
+    - type: cookie
+      name: "django_session"
+      confidence: 0.95
+    - type: header
+      name: "Server"
+      pattern: "WSGIServer|Gunicorn"
+      confidence: 0.8
+    - type: html_pattern
+      pattern: "csrfmiddlewaretoken|django"
+      confidence: 0.6
+
+# Laravel Framework Detection
 - name: Laravel
   category: Web Framework
   evidence:
     - type: cookie
       name: "XSRF-TOKEN"
-      confidence: 0.8
+      confidence: 0.9
     - type: cookie
       name: "laravel_session"
       confidence: 0.95
+    - type: cookie
+      name: "PHPSESSID"
+      confidence: 0.5
     - type: header
       name: "X-Powered-By"
       pattern: "Laravel"
@@ -31,56 +56,55 @@
       pattern: "CSRF_TOKEN|csrf_token|laravel"
       confidence: 0.6
 
-- name: Django
-  category: Web Framework
-  evidence:
-    - type: cookie
-      name: "csrftoken"
-      confidence: 0.9
-    - type: cookie
-      name: "sessionid"
-      confidence: 0.8
-    - type: header
-      name: "Server"
-      pattern: "WSGIServer"
-      confidence: 0.95
-    - type: html_pattern
-      pattern: "csrfmiddlewaretoken|django"
-      confidence: 0.6
-
+# Flask Framework Detection
 - name: Flask
   category: Web Framework
   evidence:
     - type: cookie
       name: "session"
       confidence: 0.7
+    - type: cookie
+      name: "flask_session"
+      confidence: 0.9
     - type: header
       name: "Server"
-      pattern: "Werkzeug"
+      pattern: "Werkzeug|Flask"
       confidence: 0.95
 
+# Express.js Framework Detection
 - name: Express.js
   category: Web Framework
   evidence:
     - type: cookie
       name: "connect.sid"
-      confidence: 0.85
+      confidence: 0.95
+    - type: cookie
+      name: "express.sid"
+      confidence: 0.95
+    - type: cookie
+      name: "JSESSIONID"
+      confidence: 0.5
     - type: header
       name: "X-Powered-By"
       pattern: "Express"
       confidence: 0.95
 
+# Spring Boot / Java Detection
 - name: Spring Boot
   category: Web Framework
   evidence:
     - type: cookie
       name: "JSESSIONID"
       confidence: 0.9
+    - type: cookie
+      name: "JESSIONID"
+      confidence: 0.9
     - type: header
       name: "Server"
-      pattern: "Tomcat|Jetty"
-      confidence: 0.8
+      pattern: "Tomcat|Jetty|Spring"
+      confidence: 0.85
 
+# ASP.NET Detection
 - name: ASP.NET
   category: Web Framework
   evidence:
@@ -90,28 +114,180 @@
     - type: cookie
       name: ".ASPXAUTH"
       confidence: 0.95
+    - type: cookie
+      name: "ASPXANONYMOUS"
+      confidence: 0.95
     - type: header
       name: "Server"
-      pattern: "IIS|Microsoft"
-      confidence: 0.85
+      pattern: "IIS|Microsoft|ASP"
+      confidence: 0.9
 
+# Ruby on Rails Detection
 - name: Ruby on Rails
   category: Web Framework
   evidence:
     - type: cookie
       name: "_session"
-      confidence: 0.8
+      confidence: 0.85
+    - type: cookie
+      name: "_session_id"
+      confidence: 0.9
+    - type: cookie
+      name: "rails_session"
+      confidence: 0.95
     - type: header
       name: "X-Runtime"
       pattern: "."
       confidence: 0.7
+    - type: header
+      name: "X-Request-Id"
+      pattern: "."
+      confidence: 0.4
 
+# PHP Frameworks Detection
+- name: PHP
+  category: Programming Language
+  evidence:
+    - type: cookie
+      name: "PHPSESSID"
+      confidence: 0.85
+    - type: cookie
+      name: "PHP_SESSID"
+      confidence: 0.9
+    - type: header
+      name: "X-Powered-By"
+      pattern: "PHP|php"
+      confidence: 0.9
+
+# Symfony Framework
+- name: Symfony
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "SYMFONY"
+      confidence: 0.95
+    - type: cookie
+      name: "symfony_session"
+      confidence: 0.95
+    - type: header
+      name: "X-Powered-By"
+      pattern: "Symfony"
+      confidence: 0.95
+
+# CakePHP Framework
+- name: CakePHP
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "CAKEPHP"
+      confidence: 0.9
+    - type: cookie
+      name: "CakePHP"
+      confidence: 0.95
+
+# CodeIgniter Framework
+- name: CodeIgniter
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "ci_session"
+      confidence: 0.95
+
+# Zend Framework
+- name: Zend Framework
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "Zend_Session"
+      confidence: 0.95
+    - type: cookie
+      name: "ZEND_SESSION"
+      confidence: 0.95
+
+# WordPress Detection
+- name: WordPress
+  category: CMS
+  evidence:
+    - type: cookie
+      name: "wordpress_logged_in"
+      confidence: 0.95
+    - type: cookie
+      name: "wordpress_sec"
+      confidence: 0.95
+    - type: cookie
+      name: "comment_author"
+      confidence: 0.8
+
+# Drupal Detection
+- name: Drupal
+  category: CMS
+  evidence:
+    - type: cookie
+      name: "SESS"
+      confidence: 0.7
+    - type: cookie
+      name: "DRUPAL"
+      confidence: 0.95
+
+# Joomla Detection
+- name: Joomla
+  category: CMS
+  evidence:
+    - type: cookie
+      name: "joomla_login"
+      confidence: 0.95
+    - type: cookie
+      name: "joomla_session"
+      confidence: 0.95
+
+# Magento Detection
+- name: Magento
+  category: CMS
+  evidence:
+    - type: cookie
+      name: "frontend"
+      confidence: 0.5
+    - type: cookie
+      name: "PHPSESSID"
+      confidence: 0.3
+
+# Shopify Detection
+- name: Shopify
+  category: CMS
+  evidence:
+    - type: cookie
+      name: "_shopify_y"
+      confidence: 0.95
+    - type: cookie
+      name: "_shopify_evids"
+      confidence: 0.95
+
+# Python Frameworks
+- name: FastAPI
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "session"
+      confidence: 0.3
+    - type: header
+      name: "Server"
+      pattern: "uvicorn"
+      confidence: 0.9
+
+- name: Pyramid
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "pyramid_session"
+      confidence: 0.95
+
+# Node.js Frameworks
 - name: Next.js
   category: Frontend Framework
   evidence:
     - type: header
       name: "X-Powered-By"
-      pattern: "Next\\.js"
+      pattern: "Next"
       confidence: 0.95
     - type: script_src
       pattern: "/_next/"
@@ -128,27 +304,29 @@
       pattern: "/_nuxt/"
       confidence: 0.95
 
-- name: Svelte
+# Frontend Frameworks
+- name: React
   category: Frontend Framework
   evidence:
-    - type: html_pattern
-      pattern: "svelte"
-      confidence: 0.6
     - type: script_src
-      pattern: "/svelte-"
-      confidence: 0.8
+      pattern: "react|React"
+      confidence: 0.7
 
-- name: PHP
-  category: Programming Language
+- name: Vue.js
+  category: Frontend Framework
   evidence:
-    - type: header
-      name: "X-Powered-By"
-      pattern: "PHP|php"
-      confidence: 0.9
-    - type: cookie
-      name: "PHPSESSID"
-      confidence: 0.95
+    - type: script_src
+      pattern: "vue|Vue"
+      confidence: 0.7
 
+- name: Angular
+  category: Frontend Framework
+  evidence:
+    - type: script_src
+      pattern: "angular|Angular"
+      confidence: 0.7
+
+# CSS Frameworks
 - name: Tailwind CSS
   category: CSS Framework
   evidence:
@@ -169,12 +347,27 @@
       pattern: "bootstrap"
       confidence: 0.9
 
-- name: Material UI
-  category: UI Framework
+# Cloud Platforms
+- name: Netlify
+  category: Hosting Platform
   evidence:
-    - type: html_pattern
-      pattern: "class=\"[^\"]*(?:MuiButton|MuiCard|MuiPaper)[^\"]*\""
-      confidence: 0.9
-    - type: script_src
-      pattern: "@mui|material-ui"
+    - type: header
+      name: "Server"
+      pattern: "Netlify"
+      confidence: 0.95
+
+- name: Vercel
+  category: Hosting Platform
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Vercel"
+      confidence: 0.95
+
+- name: Heroku
+  category: Hosting Platform
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Heroku"
       confidence: 0.95
