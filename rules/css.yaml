@@ -85,3 +85,129 @@
       pattern: |
         class=".*fa-[a-z0-9-]+.*"
       confidence: 0.5
+
+- name: UIKit
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: 'uikit(\.min)?\.css'
+      confidence: 0.9
+    - type: html_pattern
+      pattern: 'class=".*uk-[a-z-]+.*"'
+      confidence: 0.6
+
+- name: Pure.css
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: 'pure(\.min)?\.css'
+      confidence: 0.9
+    - type: html_pattern
+      pattern: 'class=".*pure-[a-z-]+.*"'
+      confidence: 0.6
+
+- name: Spectre.css
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: 'spectre(\.min)?\.css'
+      confidence: 0.9
+
+- name: Milligram
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: 'milligram(\.min)?\.css'
+      confidence: 0.9
+
+- name: Tachyons
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: 'tachyons(\.min)?\.css'
+      confidence: 0.9
+
+- name: Skeleton
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: 'skeleton(\.min)?\.css'
+      confidence: 0.9
+
+- name: Material Design Lite
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: 'material(\.min)?\.css'
+      confidence: 0.8
+    - type: html_pattern
+      pattern: 'class=".*mdl-[a-z-]+.*"'
+      confidence: 0.7
+
+- name: Ant Design
+  category: UI Library
+  evidence:
+    - type: css_link
+      pattern: 'antd(\.min)?\.css'
+      confidence: 0.9
+    - type: html_pattern
+      pattern: 'class=".*ant-[a-z-]+.*"'
+      confidence: 0.7
+
+- name: Chakra UI
+  category: UI Library
+  evidence:
+    - type: html_pattern
+      pattern: 'class=".*chakra-[a-z-]+.*"'
+      confidence: 0.7
+
+- name: Material-UI
+  category: UI Library
+  evidence:
+    - type: html_pattern
+      pattern: 'class=".*(MuiBox|MuiButton|MuiTypography).*"'
+      confidence: 0.7
+
+- name: Bootstrap Icons
+  category: Icon Library
+  evidence:
+    - type: css_link
+      pattern: 'bootstrap-icons(\.min)?\.css'
+      confidence: 0.9
+    - type: html_pattern
+      pattern: 'class=".*bi-[a-z0-9-]+.*"'
+      confidence: 0.6
+
+- name: Ionicons
+  category: Icon Library
+  evidence:
+    - type: css_link
+      pattern: 'ionicons'
+      confidence: 0.9
+    - type: html_pattern
+      pattern: 'class=".*ion-[a-z-]+.*"'
+      confidence: 0.6
+
+- name: Feather Icons
+  category: Icon Library
+  evidence:
+    - type: html_pattern
+      pattern: 'feather'
+      confidence: 0.6
+
+- name: Animate.css
+  category: Animation Library
+  evidence:
+    - type: css_link
+      pattern: 'animate(\.min)?\.css'
+      confidence: 0.9
+    - type: html_pattern
+      pattern: 'class=".*animate__[a-z-]+.*"'
+      confidence: 0.7
+
+- name: DaisyUI
+  category: UI Library
+  evidence:
+    - type: html_pattern
+      pattern: 'class=".*(btn|card|badge|modal|drawer).*"'
+      confidence: 0.4

@@ -98,3 +98,170 @@
       pattern: |
         <meta\s+name=["']generator["']\s+content=["'][^"']*shopify[^"']*["']>
       confidence: 0.9
+
+- name: Drupal
+  category: CMS
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <meta\s+name=["']generator["']\s+content=["'][^"']*drupal[^"']*["']>
+      confidence: 0.9
+    - type: html_pattern
+      pattern: 'Drupal\.settings|drupalSettings'
+      confidence: 0.8
+
+- name: Joomla
+  category: CMS
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <meta\s+name=["']generator["']\s+content=["'][^"']*joomla[^"']*["']>
+      confidence: 0.9
+    - type: html_pattern
+      pattern: '/media/jui/js/'
+      confidence: 0.7
+
+- name: Wix
+  category: CMS
+  evidence:
+    - type: html_pattern
+      pattern: 'wix\.com|wixstatic\.com'
+      confidence: 0.9
+
+- name: Webflow
+  category: CMS
+  evidence:
+    - type: html_pattern
+      pattern: 'webflow\.com|webflow\.io'
+      confidence: 0.9
+
+- name: Ghost
+  category: CMS
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <meta\s+name=["']generator["']\s+content=["'][^"']*ghost[^"']*["']>
+      confidence: 0.9
+
+- name: Gatsby
+  category: Static Site Generator
+  evidence:
+    - type: html_pattern
+      pattern: 'gatsby|___gatsby'
+      confidence: 0.8
+    - type: html_pattern
+      pattern: |
+        <div\s+id=["']___gatsby["']>
+      confidence: 0.9
+
+- name: Nuxt.js
+  category: Frontend Framework
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <div\s+id=["']__nuxt["']>
+      confidence: 0.9
+    - type: html_pattern
+      pattern: 'data-n-head'
+      confidence: 0.8
+
+- name: Astro
+  category: Static Site Generator
+  evidence:
+    - type: html_pattern
+      pattern: 'astro-'
+      confidence: 0.7
+
+- name: Remix
+  category: Frontend Framework
+  evidence:
+    - type: html_pattern
+      pattern: 'remix'
+      confidence: 0.6
+
+- name: SolidJS
+  category: Frontend Framework
+  evidence:
+    - type: html_pattern
+      pattern: 'data-solid'
+      confidence: 0.8
+
+- name: Preact
+  category: Frontend Framework
+  evidence:
+    - type: html_pattern
+      pattern: 'preact'
+      confidence: 0.6
+
+- name: Eleventy
+  category: Static Site Generator
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <meta\s+name=["']generator["']\s+content=["'][^"']*eleventy[^"']*["']>
+      confidence: 0.9
+
+- name: Hexo
+  category: Static Site Generator
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <meta\s+name=["']generator["']\s+content=["'][^"']*hexo[^"']*["']>
+      confidence: 0.9
+
+- name: Pelican
+  category: Static Site Generator
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <meta\s+name=["']generator["']\s+content=["'][^"']*pelican[^"']*["']>
+      confidence: 0.9
+
+- name: Magento
+  category: Ecommerce
+  evidence:
+    - type: html_pattern
+      pattern: 'Mage\.Cookies|mage/cookies'
+      confidence: 0.8
+
+- name: PrestaShop
+  category: Ecommerce
+  evidence:
+    - type: html_pattern
+      pattern: 'prestashop'
+      confidence: 0.7
+
+- name: WooCommerce
+  category: Ecommerce
+  evidence:
+    - type: html_pattern
+      pattern: 'woocommerce'
+      confidence: 0.8
+
+- name: BigCommerce
+  category: Ecommerce
+  evidence:
+    - type: html_pattern
+      pattern: 'bigcommerce'
+      confidence: 0.8
+
+- name: OpenCart
+  category: Ecommerce
+  evidence:
+    - type: html_pattern
+      pattern: 'route=|catalog/view/'
+      confidence: 0.5
+
+- name: Contentful
+  category: Headless CMS
+  evidence:
+    - type: html_pattern
+      pattern: 'contentful'
+      confidence: 0.7
+
+- name: Strapi
+  category: Headless CMS
+  evidence:
+    - type: html_pattern
+      pattern: 'strapi'
+      confidence: 0.7

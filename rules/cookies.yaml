@@ -58,3 +58,144 @@
     - type: cookie
       name: "secure_customer_sig"
       confidence: 0.7
+
+- name: Drupal
+  category: CMS
+  evidence:
+    - type: cookie
+      pattern: "SESS[a-z0-9]+"
+      confidence: 0.7
+
+- name: Joomla
+  category: CMS
+  evidence:
+    - type: cookie
+      pattern: "[a-z0-9]+sessionid"
+      confidence: 0.6
+
+- name: Magento
+  category: Ecommerce
+  evidence:
+    - type: cookie
+      name: "frontend"
+      confidence: 0.6
+    - type: cookie
+      name: "X-Magento-Vary"
+      confidence: 0.8
+
+- name: PrestaShop
+  category: Ecommerce
+  evidence:
+    - type: cookie
+      name: "PrestaShop-"
+      confidence: 0.8
+
+- name: Wix
+  category: CMS
+  evidence:
+    - type: cookie
+      pattern: "wix|svSession"
+      confidence: 0.7
+
+- name: Squarespace
+  category: CMS
+  evidence:
+    - type: cookie
+      name: "SS_MID"
+      confidence: 0.7
+
+- name: HubSpot
+  category: Marketing
+  evidence:
+    - type: cookie
+      name: "hubspotutk"
+      confidence: 0.8
+    - type: cookie
+      name: "__hstc"
+      confidence: 0.8
+
+- name: Marketo
+  category: Marketing
+  evidence:
+    - type: cookie
+      name: "_mkto_trk"
+      confidence: 0.8
+
+- name: Pardot
+  category: Marketing
+  evidence:
+    - type: cookie
+      name: "visitor_id"
+      confidence: 0.5
+    - type: cookie
+      pattern: "pardot"
+      confidence: 0.7
+
+- name: Intercom
+  category: Customer Support
+  evidence:
+    - type: cookie
+      name: "intercom-id"
+      confidence: 0.8
+    - type: cookie
+      name: "intercom-session"
+      confidence: 0.8
+
+- name: Zendesk
+  category: Customer Support
+  evidence:
+    - type: cookie
+      pattern: "_zendesk_"
+      confidence: 0.7
+
+- name: Hotjar
+  category: Analytics
+  evidence:
+    - type: cookie
+      name: "_hjid"
+      confidence: 0.8
+    - type: cookie
+      name: "_hjSessionUser_"
+      confidence: 0.8
+
+- name: Mixpanel
+  category: Analytics
+  evidence:
+    - type: cookie
+      name: "mp_"
+      confidence: 0.7
+
+- name: Optimizely
+  category: A/B Testing
+  evidence:
+    - type: cookie
+      pattern: "optimizely"
+      confidence: 0.8
+
+- name: VWO
+  category: A/B Testing
+  evidence:
+    - type: cookie
+      pattern: "_vwo_"
+      confidence: 0.8
+
+- name: Stripe
+  category: Payments
+  evidence:
+    - type: cookie
+      pattern: "stripe"
+      confidence: 0.6
+
+- name: PayPal
+  category: Payments
+  evidence:
+    - type: cookie
+      pattern: "paypal"
+      confidence: 0.6
+
+- name: Sentry
+  category: Error Tracking
+  evidence:
+    - type: cookie
+      pattern: "sentry"
+      confidence: 0.7

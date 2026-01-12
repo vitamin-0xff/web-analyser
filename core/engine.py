@@ -26,6 +26,7 @@ from analyzers.favicon import FaviconAnalyzer
 from analyzers.forms import FormsAnalyzer
 from analyzers.sri import SRIAnalyzer
 from analyzers.comments import CommentsAnalyzer
+from analyzers.assets import AssetsAnalyzer
 from models.detection import Detection, Evidence
 from models.technology import Technology, EvidenceRule
 from rules.rules_loader import load_rules
@@ -117,6 +118,13 @@ class Engine:
         )
         self.comments_analyzer = CommentsAnalyzer(
             _filter_technologies_by_rule_types(self.rules, {"html_comment", "css_comment", "js_comment"})
+        )
+        # Assets analyzer
+        self.assets_analyzer = AssetsAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {
+                "css_link", "font_src_pattern", "image_src_pattern", 
+                "html_pattern", "script_src", "header", "dns_record"
+            })
         )
 
     async def scan_url(self, url: str) -> ScanContext:
@@ -259,6 +267,8 @@ class Engine:
         detections.extend(await self.forms_analyzer.analyze(context))
         detections.extend(await self.sri_analyzer.analyze(context))
         detections.extend(await self.comments_analyzer.analyze(context))
+        # Assets analyzer
+        detections.extend(await self.assets_analyzer.analyze(context))
         return self._aggregate_detections(detections)
 
     def _aggregate_detections(self, detections: List[Detection]) -> List[Detection]:

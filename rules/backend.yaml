@@ -162,3 +162,167 @@
       name: "X-Powered-By"
       pattern: "koa"
       confidence: 0.8
+
+- name: Laravel
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "laravel_session"
+      confidence: 0.9
+    - type: header
+      name: "X-Powered-By"
+      pattern: "Laravel"
+      confidence: 0.8
+
+- name: Symfony
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "symfony"
+      confidence: 0.8
+    - type: header
+      name: "X-Powered-By"
+      pattern: "Symfony"
+      confidence: 0.8
+
+- name: Flask
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "session"
+      confidence: 0.5
+    - type: header
+      name: "Server"
+      pattern: "Werkzeug"
+      confidence: 0.7
+
+- name: FastAPI
+  category: Web Framework
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "uvicorn"
+      confidence: 0.7
+
+- name: Spring Framework
+  category: Web Framework
+  evidence:
+    - type: header
+      name: "X-Application-Context"
+      pattern: "."
+      confidence: 0.8
+    - type: cookie
+      name: "JSESSIONID"
+      confidence: 0.6
+
+- name: Cloudflare
+  category: CDN
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "cloudflare"
+      confidence: 0.9
+    - type: header
+      name: "CF-Ray"
+      pattern: "."
+      confidence: 0.9
+
+- name: Amazon CloudFront
+  category: CDN
+  evidence:
+    - type: header
+      name: "X-Amz-Cf-Id"
+      pattern: "."
+      confidence: 0.9
+    - type: header
+      name: "Via"
+      pattern: "CloudFront"
+      confidence: 0.8
+
+- name: Akamai
+  category: CDN
+  evidence:
+    - type: header
+      name: "X-Akamai-Transformed"
+      pattern: "."
+      confidence: 0.8
+    - type: header
+      name: "Server"
+      pattern: "AkamaiGHost"
+      confidence: 0.9
+
+- name: HAProxy
+  category: Load Balancer
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "HAProxy"
+      confidence: 0.8
+
+- name: Traefik
+  category: Load Balancer
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "traefik"
+      confidence: 0.8
+
+- name: Node.js
+  category: Runtime
+  evidence:
+    - type: header
+      name: "X-Powered-By"
+      pattern: "Node"
+      confidence: 0.7
+
+- name: Jetty
+  category: Web Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Jetty"
+      confidence: 0.8
+
+- name: Passenger
+  category: Application Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Phusion Passenger"
+      confidence: 0.8
+    - type: header
+      name: "X-Powered-By"
+      pattern: "Phusion Passenger"
+      confidence: 0.8
+
+- name: Unicorn
+  category: Application Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Unicorn"
+      confidence: 0.7
+
+- name: Go
+  category: Programming Language
+  evidence:
+    - type: header
+      name: "X-Powered-By"
+      pattern: "Go"
+      confidence: 0.7
+
+- name: ASP.NET Core
+  category: Web Framework
+  evidence:
+    - type: header
+      name: "X-Powered-By"
+      pattern: "ASP.NET Core"
+      confidence: 0.9
+
+- name: NestJS
+  category: Web Framework
+  evidence:
+    - type: header
+      name: "X-Powered-By"
+      pattern: "NestJS"
+      confidence: 0.8

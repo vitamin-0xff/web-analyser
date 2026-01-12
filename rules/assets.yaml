@@ -1,0 +1,243 @@
+# Rules for detecting technologies via asset URLs (fonts, icons, CDNs, images)
+
+- name: Google Fonts
+  category: Font Service
+  evidence:
+    - type: css_link
+      pattern: 'fonts\.googleapis\.com'
+      confidence: 0.8
+    - type: font_src_pattern
+      pattern: 'fonts\.gstatic\.com'
+      confidence: 0.8
+
+- name: Adobe Fonts
+  category: Font Service
+  evidence:
+    - type: css_link
+      pattern: 'use\.typekit\.net'
+      confidence: 0.9
+    - type: font_src_pattern
+      pattern: 'typekit\.net'
+      confidence: 0.9
+
+- name: Font Squirrel
+  category: Font Service
+  evidence:
+    - type: font_src_pattern
+      pattern: 'fontsquirrel\.com'
+      confidence: 0.7
+
+- name: Fonts.com
+  category: Font Service
+  evidence:
+    - type: font_src_pattern
+      pattern: 'fast\.fonts\.net'
+      confidence: 0.8
+
+# Icon Libraries
+- name: Material Icons
+  category: Icon Library
+  evidence:
+    - type: css_link
+      pattern: 'fonts\.googleapis\.com/icon'
+      confidence: 0.9
+    - type: html_pattern
+      pattern: 'class=".*material-icons.*"'
+      confidence: 0.8
+
+- name: Ionicons
+  category: Icon Library
+  evidence:
+    - type: css_link
+      pattern: 'code\.ionicframework\.com/ionicons'
+      confidence: 0.9
+
+- name: Line Awesome
+  category: Icon Library
+  evidence:
+    - type: css_link
+      pattern: 'line-awesome'
+      confidence: 0.8
+
+- name: Remix Icon
+  category: Icon Library
+  evidence:
+    - type: css_link
+      pattern: 'remixicon'
+      confidence: 0.8
+
+# Image CDNs
+- name: Cloudinary
+  category: Image CDN
+  evidence:
+    - type: image_src_pattern
+      pattern: 'res\.cloudinary\.com'
+      confidence: 0.9
+
+- name: Imgix
+  category: Image CDN
+  evidence:
+    - type: image_src_pattern
+      pattern: 'imgix\.net'
+      confidence: 0.9
+
+- name: Fastly Image Optimizer
+  category: Image CDN
+  evidence:
+    - type: image_src_pattern
+      pattern: 'fastly\.net.*\?'
+      confidence: 0.7
+
+- name: Cloudflare Images
+  category: Image CDN
+  evidence:
+    - type: image_src_pattern
+      pattern: 'imagedelivery\.net'
+      confidence: 0.8
+
+- name: Imagekit
+  category: Image CDN
+  evidence:
+    - type: image_src_pattern
+      pattern: 'imagekit\.io'
+      confidence: 0.9
+
+- name: Uploadcare
+  category: Image CDN
+  evidence:
+    - type: image_src_pattern
+      pattern: 'ucarecdn\.com'
+      confidence: 0.9
+
+# Video CDNs
+- name: Vimeo
+  category: Video Service
+  evidence:
+    - type: html_pattern
+      pattern: 'player\.vimeo\.com'
+      confidence: 0.9
+
+- name: YouTube
+  category: Video Service
+  evidence:
+    - type: html_pattern
+      pattern: 'youtube\.com/embed|youtube-nocookie\.com'
+      confidence: 0.9
+
+- name: Wistia
+  category: Video Service
+  evidence:
+    - type: html_pattern
+      pattern: 'fast\.wistia\.(com|net)'
+      confidence: 0.9
+
+- name: JW Player
+  category: Video Player
+  evidence:
+    - type: script_src
+      pattern: 'jwplayer|jwpsrv\.com'
+      confidence: 0.8
+
+# JavaScript CDNs
+- name: jsDelivr
+  category: JavaScript CDN
+  evidence:
+    - type: script_src
+      pattern: 'cdn\.jsdelivr\.net'
+      confidence: 0.7
+
+- name: cdnjs
+  category: JavaScript CDN
+  evidence:
+    - type: script_src
+      pattern: 'cdnjs\.cloudflare\.com'
+      confidence: 0.7
+
+- name: unpkg
+  category: JavaScript CDN
+  evidence:
+    - type: script_src
+      pattern: 'unpkg\.com'
+      confidence: 0.7
+
+- name: Google Hosted Libraries
+  category: JavaScript CDN
+  evidence:
+    - type: script_src
+      pattern: 'ajax\.googleapis\.com'
+      confidence: 0.7
+
+# Static Site Hosting
+- name: Netlify
+  category: Hosting
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Netlify"
+      confidence: 0.9
+    - type: header
+      name: "X-NF-Request-ID"
+      pattern: "."
+      confidence: 0.9
+
+- name: Vercel
+  category: Hosting
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Vercel"
+      confidence: 0.9
+    - type: header
+      name: "X-Vercel-ID"
+      pattern: "."
+      confidence: 0.9
+
+- name: GitHub Pages
+  category: Hosting
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: 'GitHub\.com'
+      confidence: 0.8
+    - type: dns_record
+      name: "CNAME"
+      pattern: 'github\.io'
+      confidence: 0.7
+
+- name: AWS S3
+  category: Hosting
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "AmazonS3"
+      confidence: 0.9
+
+- name: Firebase Hosting
+  category: Hosting
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Firebase"
+      confidence: 0.9
+
+# Animation/Graphics Libraries
+- name: Lottie
+  category: Animation
+  evidence:
+    - type: script_src
+      pattern: 'lottie'
+      confidence: 0.8
+
+- name: Three.js CDN
+  category: 3D Graphics
+  evidence:
+    - type: script_src
+      pattern: 'three'
+      confidence: 0.7
+
+- name: Particle.js
+  category: Animation
+  evidence:
+    - type: script_src
+      pattern: 'particles'
+      confidence: 0.7
