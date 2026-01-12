@@ -141,3 +141,109 @@
     - type: js_global
       pattern: 'Stripe'
       confidence: 0.9
+
+# Payment Gateways Extensions
+
+- name: PayPal Checkout
+  category: Payments
+  evidence:
+    - type: script_src
+      pattern: 'js\.paypal\.com'
+      confidence: 0.9
+    - type: js_global
+      pattern: 'paypal|PAYPAL'
+      confidence: 0.8
+
+- name: Square
+  category: Payments
+  evidence:
+    - type: script_src
+      pattern: 'square\.github\.io|paysquare'
+      confidence: 0.8
+    - type: js_global
+      pattern: 'SqPaymentForm'
+      confidence: 0.9
+
+- name: Braintree
+  category: Payments
+  evidence:
+    - type: script_src
+      pattern: 'braintree'
+      confidence: 0.9
+    - type: js_global
+      pattern: 'braintree'
+      confidence: 0.8
+
+# Identity & Auth Providers
+
+- name: Auth0
+  category: Identity
+  evidence:
+    - type: script_src
+      pattern: 'cdn\.auth0\.com'
+      confidence: 0.9
+    - type: js_global
+      pattern: 'Auth0|auth0'
+      confidence: 0.8
+
+- name: Okta
+  category: Identity
+  evidence:
+    - type: script_src
+      pattern: 'okta\.com|oktacdn'
+      confidence: 0.9
+    - type: js_global
+      pattern: 'OktaAuth'
+      confidence: 0.8
+
+- name: Firebase Auth
+  category: Identity
+  evidence:
+    - type: script_src
+      pattern: 'firebase'
+      confidence: 0.7
+    - type: js_global
+      pattern: 'firebase|FirebaseAuth'
+      confidence: 0.8
+
+# Analytics Extensions
+
+- name: Segment
+  category: Analytics
+  evidence:
+    - type: script_src
+      pattern: 'cdn\.segment\.com|analytics\.js'
+      confidence: 0.9
+    - type: js_global
+      pattern: 'analytics'
+      confidence: 0.7
+
+- name: Mixpanel
+  category: Analytics
+  evidence:
+    - type: script_src
+      pattern: 'mixpanel\.com'
+      confidence: 0.9
+    - type: js_global
+      pattern: 'mixpanel'
+      confidence: 0.8
+
+- name: Hotjar
+  category: Analytics
+  evidence:
+    - type: script_src
+      pattern: 'static\.hotjar\.com'
+      confidence: 0.8
+    - type: js_global
+      pattern: 'hj'
+      confidence: 0.6
+
+- name: Matomo
+  category: Analytics
+  evidence:
+    - type: script_src
+      pattern: 'matomo|piwik'
+      confidence: 0.8
+    - type: js_global
+      pattern: '_paq'
+      confidence: 0.8

@@ -109,3 +109,55 @@
       name: "TXT"
       pattern: "v=spf1"
       confidence: 0.6
+
+# Email Security Extensions
+
+- name: DMARC Policy
+  category: Email Security
+  evidence:
+    - type: dns_record
+      name: "TXT"
+      pattern: 'v=DMARC1'
+      confidence: 0.6
+
+- name: DKIM Signing
+  category: Email Security
+  evidence:
+    - type: dns_record
+      name: "TXT"
+      pattern: 'v=DKIM1'
+      confidence: 0.6
+
+- name: MTA-STS
+  category: Email Security
+  evidence:
+    - type: dns_record
+      name: "TXT"
+      pattern: 'v=STSv1'
+      confidence: 0.6
+
+# Email Service Providers
+
+- name: Mailgun
+  category: Email
+  evidence:
+    - type: dns_record
+      name: "CNAME"
+      pattern: 'mailgun\.org'
+      confidence: 0.8
+
+- name: SendGrid
+  category: Email
+  evidence:
+    - type: dns_record
+      name: "CNAME"
+      pattern: 'sendgrid'
+      confidence: 0.8
+
+- name: Mailchimp
+  category: Email
+  evidence:
+    - type: dns_record
+      name: "CNAME"
+      pattern: 'mailchimp'
+      confidence: 0.7

@@ -13,6 +13,13 @@ from analyzers.js import JsAnalyzer
 from analyzers.cookies import CookiesAnalyzer
 from analyzers.network import NetworkAnalyzer
 from analyzers.css import CssAnalyzer
+from analyzers.meta_tags import MetaTagsAnalyzer
+from analyzers.structured_data import StructuredDataAnalyzer
+from analyzers.pwa import PWAAnalyzer
+from analyzers.robots_sitemap import RobotsSitemapAnalyzer
+from analyzers.http_details import HTTPDetailsAnalyzer
+from analyzers.storage import StorageAnalyzer
+from analyzers.endpoints import EndpointsAnalyzer
 from models.detection import Detection, Evidence
 from models.technology import Technology, EvidenceRule
 from rules.rules_loader import load_rules
@@ -67,7 +74,28 @@ class Engine:
         self.css_analyzer = CssAnalyzer(
             _filter_technologies_by_rule_types(self.rules, {"css_link", "html_pattern"})
         )
-        
+        # NEW: Additional analyzers
+        self.meta_tags_analyzer = MetaTagsAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"meta_name", "meta_property"})
+        )
+        self.structured_data_analyzer = StructuredDataAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"json_ld_pattern"})
+        )
+        self.pwa_analyzer = PWAAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"pwa_manifest", "service_worker"})
+        )
+        self.robots_sitemap_analyzer = RobotsSitemapAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"robots_txt", "sitemap_pattern"})
+        )
+        self.http_details_analyzer = HTTPDetailsAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"http_version", "server_timing"})
+        )
+        self.storage_analyzer = StorageAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"js_storage_key"})
+        )
+        self.endpoints_analyzer = EndpointsAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"graphql_endpoint", "openapi_url", "api_pattern"})
+        )
 
     async def scan_url(self, url: str) -> ScanContext:
         loop = asyncio.get_running_loop()
@@ -110,6 +138,21 @@ class Engine:
         stylesheets = [urljoin(url, href) for href in re.findall(r'<link\s+[^>]*rel=["\']stylesheet["\'][^>]*href=["\']([^"\']+)["\']', html_content)]
         js_globals = set(re.findall(r'(?:window\.|var\s+|let\s+|const\s+)(\w+)\s*=', html_content))
 
+        # 5. NEW: Extract PWA manifest and service worker
+        manifest_match = re.search(r'<link\s+rel=["\']manifest["\'][^>]*href=["\']([^"\']+)["\']', html_content)
+        manifest_url = urljoin(url, manifest_match.group(1)) if manifest_match else None
+
+        service_worker_match = re.search(r'navigator\.serviceWorker\.register\(["\']([^"\']+)["\']', html_content)
+        service_worker_url = urljoin(url, service_worker_match.group(1)) if service_worker_match else None
+
+        # 6. NEW: Extract WASM modules
+        wasm_modules = [urljoin(url, src) for src in re.findall(r'["\']([^"\']*\.wasm)["\']', html_content)]
+
+        # 7. NEW: Fetch robots.txt and sitemaps
+        base_url = f"{urlparse(url).scheme}://{hostname}" if hostname else url
+        robots_txt = await self._fetch_robots_txt(base_url)
+        sitemaps = await self._fetch_sitemaps(base_url, robots_txt or "")
+
         context = ScanContext(
             url=url,
             headers=headers,
@@ -119,10 +162,44 @@ class Engine:
             stylesheets=stylesheets,
             js_globals=js_globals,
             tls=tls_info,
-            dns_records=dns_records
+            dns_records=dns_records,
+            manifest_url=manifest_url,
+            service_worker_url=service_worker_url,
+            status_code=response.status_code,
+            http_version=getattr(response, 'http_version', None) or str(response.extensions.get('http_version')) if hasattr(response, 'extensions') else None,
+            server_timing=headers.get('server-timing'),
+            robots_txt=robots_txt,
+            sitemaps=sitemaps or [],
+            wasm_modules=wasm_modules or []
         )
 
         return context
+
+    async def _fetch_robots_txt(self, base_url: str) -> Optional[str]:
+        """Fetch /robots.txt from the domain."""
+        try:
+            resp = await fetch_url(f"{base_url}/robots.txt")
+            return resp.text if resp.status_code == 200 else None
+        except:
+            return None
+
+    async def _fetch_sitemaps(self, base_url: str, robots_txt: str) -> List[str]:
+        """Extract sitemap URLs from robots.txt and check common paths."""
+        sitemaps = []
+        if robots_txt:
+            sitemap_urls = re.findall(r'Sitemap:\s*(.+)', robots_txt)
+            sitemaps.extend(sitemap_urls)
+        
+        # Check common sitemap locations
+        for path in ['/sitemap.xml', '/sitemap_index.xml']:
+            try:
+                resp = await fetch_url(f"{base_url}{path}")
+                if resp.status_code == 200:
+                    sitemaps.append(f"{base_url}{path}")
+            except:
+                pass
+        
+        return sitemaps
 
     async def analyze_context(self, context: ScanContext) -> List[Detection]:
         detections: List[Detection] = []
@@ -132,6 +209,14 @@ class Engine:
         detections.extend(await self.cookies_analyzer.analyze(context))
         detections.extend(await self.network_analyzer.analyze(context))
         detections.extend(await self.css_analyzer.analyze(context))
+        # NEW: Additional analyzers
+        detections.extend(await self.meta_tags_analyzer.analyze(context))
+        detections.extend(await self.structured_data_analyzer.analyze(context))
+        detections.extend(await self.pwa_analyzer.analyze(context))
+        detections.extend(await self.robots_sitemap_analyzer.analyze(context))
+        detections.extend(await self.http_details_analyzer.analyze(context))
+        detections.extend(await self.storage_analyzer.analyze(context))
+        detections.extend(await self.endpoints_analyzer.analyze(context))
         return self._aggregate_detections(detections)
 
     def _aggregate_detections(self, detections: List[Detection]) -> List[Detection]:
