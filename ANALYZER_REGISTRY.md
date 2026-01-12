@@ -109,3 +109,132 @@ import analyzers.my_analyzer
 - Use `--exclude` to skip expensive analyzers (e.g., `html` for large pages)
 - Check `--list-analyzers` to see all available options
 - Each analyzer has a 10s timeout to prevent hangs
+
+## Phase 2: Active Detection Analyzers
+
+Phase 2 adds **active probing** analyzers that make HTTP requests to detect technologies. These are disabled by default to avoid impacting target systems.
+
+### Active Analyzers (Opt-in)
+
+#### GraphQL Introspection
+Probes for GraphQL endpoints and introspects schemas to detect server implementations.
+
+```bash
+# Enable with --active flag
+uv run main.py https://example.com --active
+```
+
+**Endpoints probed:**
+- `/graphql`, `/api/graphql`, `/api/v1/graphql`
+- `/query`, `/api/query`, `/gql`
+- And 3 more common variants
+
+**Detections:**
+- Apollo GraphQL (0.9 confidence)
+- Hasura (0.95 confidence)
+- GraphQL Yoga
+- AWS AppSync
+
+#### API Probing
+Discovers REST API endpoints and analyzes responses to detect frameworks.
+
+**Endpoints probed:**
+- `/api`, `/api/v1`, `/api/v2`, `/v1-3`
+- `/swagger.json`, `/openapi.json`
+- `/api/docs`, `/health`, `/status`, `/version`
+- And more
+
+**Detections:**
+- FastAPI (0.9 confidence)
+- Django REST Framework
+- Express.js
+- Flask
+- Spring Boot
+- ASP.NET Core
+- Ruby on Rails
+- Laravel
+
+#### Error Message Analysis
+Triggers errors to fingerprint technologies from error pages.
+
+**Methods:**
+- Requests non-existent paths (`/api/nonexistent`, `/nonexistent.php`)
+- Analyzes error messages (500 status)
+- Parses stack traces
+
+**Detections:**
+- Backend frameworks (Django, Flask, Rails)
+- Database errors (PostgreSQL, MySQL, MongoDB)
+- Web servers (Nginx, Apache, IIS)
+- Cloud platforms (AWS Lambda, Google Cloud, Azure)
+
+### Usage
+
+**Default (Passive Only):**
+```bash
+uv run main.py https://example.com
+# Only uses: headers, html, js, css, etc. (19 analyzers)
+# No extra HTTP requests to target
+```
+
+**With Active Detection:**
+```bash
+uv run main.py https://example.com --active
+# Includes: graphql, api_probe, error_probe (22 total analyzers)
+# Makes ~10-15 additional HTTP requests
+```
+
+**Exclude Specific Active Analyzers:**
+```bash
+# Run active but skip error probing
+uv run main.py https://example.com --active --exclude error_probe
+
+# Run active but skip API and error probing
+uv run main.py https://example.com --active --exclude api_probe error_probe
+```
+
+### Performance
+
+- Passive scan: ~7 seconds (jQuery.com)
+- Active scan: ~10 seconds (+3 second overhead for probing)
+- Each active analyzer has 5 second timeout
+- Limited to 10-15 HTTP requests per analyzer
+
+### Safety & Ethical Usage
+
+⚠️ **Active detection makes HTTP requests to the target system:**
+- Always get permission before scanning
+- Respects HTTP status codes (404, 401, etc.)
+- Limits probes to common paths
+- Reasonable timeouts prevent resource exhaustion
+- Does not attempt exploitation, only detection
+
+### Detection Quality
+
+| Analyzer | Techniques | Confidence | False Positives |
+|----------|-----------|-----------|-----------------|
+| graphql | Introspection responses | 0.9-1.0 | Very low |
+| api_probe | Response headers, JSON structure | 0.5-0.9 | Medium |
+| error_probe | Error messages, stack traces | 0.8-0.9 | Low |
+
+### Examples
+
+**Detect GraphQL on example.com:**
+```bash
+uv run main.py https://example.com --active
+# Output: "Apollo GraphQL" or "Hasura" if GraphQL detected
+```
+
+**Fingerprint backend stack:**
+```bash
+uv run main.py https://example.com --active --exclude graphql
+# Uses API probing + error triggering
+# Detects: Flask, PostgreSQL, Nginx, etc.
+```
+
+**Check what analyzers will run:**
+```bash
+uv run main.py --list-analyzers
+# Lists all 22 analyzers (19 passive + 3 active)
+```
+
