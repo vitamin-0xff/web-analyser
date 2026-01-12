@@ -1,8 +1,9 @@
-from typing import List
+from typing import List, Optional
 import re
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.version_utils import extract_version_from_meta_tag
 
 
 class MetaTagsAnalyzer:
@@ -22,6 +23,8 @@ class MetaTagsAnalyzer:
                     pattern = f'<meta\\s+name=["\']?{re.escape(rule.name or "")}["\']?\\s+content=["\']([^"\']+)["\']'
                     match = re.search(pattern, html, re.IGNORECASE)
                     if match and rule.pattern and re.search(rule.pattern, match.group(1), re.IGNORECASE):
+                        # Extract version from meta tag content
+                        version = self._extract_version(match.group(1), tech, rule.name)
                         detections.append(
                             Detection(
                                 name=tech.name,
@@ -33,7 +36,7 @@ class MetaTagsAnalyzer:
                                     value=match.group(1),
                                     pattern=rule.pattern
                                 ),
-                                version=tech.version
+                                version=version
                             )
                         )
                 
@@ -42,6 +45,8 @@ class MetaTagsAnalyzer:
                     pattern = f'<meta\\s+property=["\']?{re.escape(rule.name or "")}["\']?\\s+content=["\']([^"\']+)["\']'
                     match = re.search(pattern, html, re.IGNORECASE)
                     if match and rule.pattern and re.search(rule.pattern, match.group(1), re.IGNORECASE):
+                        # Extract version from meta tag content
+                        version = self._extract_version(match.group(1), tech, rule.name)
                         detections.append(
                             Detection(
                                 name=tech.name,
@@ -53,8 +58,13 @@ class MetaTagsAnalyzer:
                                     value=match.group(1),
                                     pattern=rule.pattern
                                 ),
-                                version=tech.version
+                                version=version
                             )
                         )
         
         return detections
+
+    def _extract_version(self, meta_content: str, tech: Technology, meta_name: Optional[str] = None) -> Optional[str]:
+        """Extract version from meta tag content using CMS-specific patterns."""
+        # Use the meta tag extraction utility which handles WordPress, Drupal, etc.
+        return extract_version_from_meta_tag(meta_content, tech.name, meta_name)

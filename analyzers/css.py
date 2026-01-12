@@ -1,8 +1,9 @@
-from typing import List
+from typing import List, Optional
 import re
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
+from core.version_utils import extract_version_from_url
 
 class CssAnalyzer:
     def __init__(self, rules: List[Technology]):
@@ -16,6 +17,8 @@ class CssAnalyzer:
                 if rule.type == "css_link" and rule.pattern:
                     for stylesheet_url in context.stylesheets:
                         if re.search(rule.pattern, stylesheet_url, re.IGNORECASE):
+                            # Extract version from stylesheet URL
+                            version = self._extract_version(stylesheet_url, tech)
                             detections.append(
                                 Detection(
                                     name=tech.name,
@@ -26,7 +29,7 @@ class CssAnalyzer:
                                         value=stylesheet_url,
                                         pattern=rule.pattern
                                     ),
-                                    version=tech.version
+                                    version=version
                                 )
                             )
                 
@@ -47,3 +50,14 @@ class CssAnalyzer:
                         )
 
         return detections
+
+    def _extract_version(self, stylesheet_url: str, tech: Technology) -> Optional[str]:
+        """Extract version from stylesheet URL using technology-specific pattern."""
+        # First try the technology-specific pattern if available
+        if hasattr(tech, 'version_pattern') and tech.version_pattern:
+            match = re.search(tech.version_pattern, stylesheet_url, re.IGNORECASE)
+            if match:
+                return match.group(1)
+        
+        # Fallback to generic version extraction with tech name context
+        return extract_version_from_url(stylesheet_url, tech.name)

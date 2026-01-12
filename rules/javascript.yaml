@@ -2,6 +2,7 @@
 
 - name: React
   category: Frontend Framework
+  version_pattern: 'react[@/-]v?(\d+\.\d+\.\d+[-.\w]*)'
   evidence:
     - type: script_src
       pattern: 'react(\.min)?\.js'
@@ -12,6 +13,7 @@
 
 - name: Angular
   category: Frontend Framework
+  version_pattern: 'angular[@/-]v?(\d+\.\d+\.\d+[-.\w]*)'
   evidence:
     - type: script_src
       pattern: 'angular(\.min)?\.js'
@@ -22,6 +24,7 @@
 
 - name: Vue.js
   category: Frontend Framework
+  version_pattern: 'vue[@/-]v?(\d+\.\d+\.\d+[-.\w]*)'
   evidence:
     - type: script_src
       pattern: 'vue(\.min)?\.js'
@@ -32,6 +35,7 @@
 
 - name: jQuery
   category: JavaScript Library
+  version_pattern: 'jquery[/-]v?(\d+\.\d+\.\d+[-.\w]*)'
   evidence:
     - type: js_global
       pattern: 'jQuery|\$'
