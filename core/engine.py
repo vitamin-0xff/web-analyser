@@ -256,26 +256,33 @@ class Engine:
 
     async def analyze_context(self, context: ScanContext) -> List[Detection]:
         logger = logging.getLogger(__name__)
-        detections: List[Detection] = []
-        
         analyzer_timeout = 10  # seconds per analyzer to avoid hangs
 
-        for name, analyzer in self.analyzers.items():
+        # Create tasks for all analyzers to run in parallel
+        async def run_analyzer(name: str, analyzer) -> Tuple[str, List[Detection]]:
             logger.info(f"Running {name} analyzer")
             try:
                 result = await asyncio.wait_for(analyzer.analyze(context), timeout=analyzer_timeout)
+                if result:
+                    logger.debug(f"{name} analyzer found {len(result)} technologies")
+                else:
+                    logger.debug(f"{name} analyzer found 0 technologies")
+                return name, result or []
             except asyncio.TimeoutError:
                 logger.warning(f"{name} analyzer timed out after {analyzer_timeout}s")
-                continue
+                return name, []
             except Exception as e:
                 logger.error(f"Error in {name} analyzer: {e}", exc_info=True)
-                continue
+                return name, []
 
-            if result:
-                logger.debug(f"{name} analyzer found {len(result)} technologies")
-                detections.extend(result)
-            else:
-                logger.debug(f"{name} analyzer found 0 technologies")
+        # Run all analyzers in parallel
+        tasks = [run_analyzer(name, analyzer) for name, analyzer in self.analyzers.items()]
+        results = await asyncio.gather(*tasks)
+        
+        # Flatten all detections
+        detections: List[Detection] = []
+        for name, analyzer_detections in results:
+            detections.extend(analyzer_detections)
         
         logger.debug(f"Aggregating {len(detections)} detections")
         return self._aggregate_detections(detections)

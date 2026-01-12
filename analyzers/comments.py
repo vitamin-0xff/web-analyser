@@ -4,6 +4,7 @@ from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
 from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
+from core.html_utils import findall_html_parallel
 
 
 @AnalyzerRegistry.register("comments", lambda rules: filter_by_rule_types(rules, {"html_comment", "css_comment", "js_comment"}))
@@ -17,8 +18,8 @@ class CommentsAnalyzer:
         detections: List[Detection] = []
         html = context.html
         
-        # Extract HTML comments
-        html_comments = re.findall(r'<!--(.*?)-->', html, re.DOTALL)
+        # Extract HTML comments using parallel search
+        html_comments = await findall_html_parallel(r'<!--(.*?)-->', html, re.DOTALL, "HTML comments")
         html_comment_text = '\n'.join(html_comments)
         
         # Extract CSS comments from inline <style> tags

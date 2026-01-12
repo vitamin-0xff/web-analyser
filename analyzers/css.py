@@ -5,6 +5,7 @@ from models.detection import Detection, Evidence
 from models.technology import Technology
 from core.version_utils import extract_version_from_url
 from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
+from core.html_utils import search_html_parallel
 
 @AnalyzerRegistry.register(
     "css",
@@ -39,8 +40,15 @@ class CssAnalyzer:
                             )
                 
                 elif rule.type == "html_pattern" and rule.pattern:
-                    if re.search(rule.pattern, context.html, re.IGNORECASE):
-                         detections.append(
+                    # Use parallel HTML search utility
+                    match = await search_html_parallel(
+                        rule.pattern,
+                        context.html,
+                        re.IGNORECASE,
+                        tech.name
+                    )
+                    if match:
+                        detections.append(
                             Detection(
                                 name=tech.name,
                                 category=tech.category,
@@ -48,7 +56,7 @@ class CssAnalyzer:
                                 evidence=Evidence(
                                     type="html_pattern",
                                     pattern=rule.pattern,
-                                    value=re.search(rule.pattern, context.html, re.IGNORECASE).group(0)
+                                    value=match.group(0)
                                 ),
                                 version=tech.version
                             )
