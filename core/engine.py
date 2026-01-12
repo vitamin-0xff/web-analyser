@@ -71,15 +71,19 @@ def _filter_technologies_by_rule_types(technologies: List[Technology], allowed: 
     return filtered
 
 class Engine:
-    def __init__(self, exclude_analyzers: Set[str] = None):
+    def __init__(self, exclude_analyzers: Set[str] = None, custom_headers: Dict[str, str] = None):
         """Initialize the engine with dynamic analyzer registry.
         
         Args:
             exclude_analyzers: Set of analyzer names to exclude (e.g., {'html', 'js'})
+            custom_headers: Dictionary of custom HTTP headers to include in requests
         """
         self.logger = logging.getLogger(__name__)
         self.rules = load_rules()
         self.logger.info(f"Loaded {len(self.rules)} technology rules")
+        
+        # Store custom headers for use in requests
+        self.custom_headers = custom_headers or {}
         
         # Instantiate all registered analyzers dynamically
         self.analyzers = AnalyzerRegistry.instantiate_all(self.rules, exclude=exclude_analyzers)
@@ -88,6 +92,7 @@ class Engine:
         if exclude_analyzers:
             self.logger.info(f"Excluded analyzers: {', '.join(sorted(exclude_analyzers))}")
 
+
     async def scan_url(self, url: str) -> ScanContext:
         logger = logging.getLogger(__name__)
         logger.debug(f"Starting scan_url for {url}")
@@ -95,7 +100,7 @@ class Engine:
 
         # 1. Fetch HTTP data (async)
         logger.debug(f"Fetching HTTP data from {url}")
-        response = await fetch_url(url)
+        response = await fetch_url(url, headers=self.custom_headers)
         logger.debug(f"HTTP response: status={response.status_code}, content-length={len(response.text)}")
         headers = {k.lower(): v for k, v in response.headers.items()}
         html_content = response.text

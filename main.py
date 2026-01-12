@@ -36,6 +36,7 @@ def main():
     parser.add_argument("--exclude", type=str, nargs="+", help="Exclude specific analyzers (e.g., --exclude html js cookies)")
     parser.add_argument("--list-analyzers", action="store_true", help="List all available analyzers and exit")
     parser.add_argument("--analyze-mode", type=str, default="passive", choices=["passive", "active", "all"], help="Analysis mode: passive (default), active (only active analyzers), or all (both)")
+    parser.add_argument("--headers-file", type=str, help="Path to JSON file containing additional HTTP headers (e.g., User-Agent, Cookie, Authorization)")
     args = parser.parse_args()
     
     # Configure logging
@@ -60,6 +61,26 @@ def main():
     # Require URL if not listing analyzers
     if not args.url:
         parser.error("URL is required unless using --list-analyzers")
+    
+    # Load custom headers from JSON file if provided
+    custom_headers = {}
+    if args.headers_file:
+        try:
+            with open(args.headers_file, 'r') as f:
+                custom_headers = json.load(f)
+                if not isinstance(custom_headers, dict):
+                    logger.error("Headers file must contain a JSON object (dictionary)")
+                    return
+                logger.info(f"Loaded {len(custom_headers)} custom headers from {args.headers_file}")
+        except FileNotFoundError:
+            logger.error(f"Headers file not found: {args.headers_file}")
+            return
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON in headers file: {e}")
+            return
+        except Exception as e:
+            logger.error(f"Error reading headers file: {e}")
+            return
     
     # Validate and apply analyzer mode
     exclude_set = set(args.exclude) if args.exclude else set()
@@ -87,10 +108,12 @@ def main():
     logger.info(f"Starting scan of {args.url} with confidence threshold {args.confidence_threshold}")
     if exclude_set:
         logger.info(f"Excluding analyzers: {', '.join(sorted(exclude_set))}")
+    if custom_headers:
+        logger.info(f"Using custom headers: {', '.join(custom_headers.keys())}")
 
     async def run():
         logger = logging.getLogger(__name__)
-        engine = Engine(exclude_analyzers=exclude_set)
+        engine = Engine(exclude_analyzers=exclude_set, custom_headers=custom_headers)
         logger.info("Initialized analysis engine")
         
         logger.info(f"Fetching {args.url}...")
