@@ -65,3 +65,17 @@ def load_graphql_endpoints(rules_dir: str = "rules") -> tuple[List[str], str, st
         config.get("introspection_query", ""),
         config.get("simple_query", "")
     )
+
+
+def load_admin_pages(rules_dir: str = "rules") -> tuple[List[str], List[str]]:
+    """
+    Load admin page paths and indicators from configuration file.
+    
+    Args:
+        rules_dir: Directory where admin_pages.yaml is located
+        
+    Returns:
+        Tuple of (admin_paths, admin_indicators)
+    """
+    config = load_config(os.path.join(rules_dir, "admin_pages.yaml"))
+    return config.get("admin_paths", []), config.get("admin_indicators", [])

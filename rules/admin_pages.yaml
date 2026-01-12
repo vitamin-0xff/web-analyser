@@ -1,0 +1,97 @@
+# Common admin page paths for probing
+# Used by admin_pages.py to detect admin interfaces and backend technologies
+
+admin_paths:
+  # Common admin routes
+  - /admin
+  - /admin/
+  - /administrator
+  - /admin/login
+  - /admin/dashboard
+  - /admin/panel
+  
+  # CMS-specific admin paths
+  - /wp-admin
+  - /wp-login.php
+  - /admin.php
+  - /index.php?admin
+  - /administrator/index.php
+  - /administrator/
+  - /admin/index.php
+  
+  # Framework-specific admin paths
+  - /django-admin
+  - /django/admin
+  - /adminer
+  - /adminer.php
+  - /phpmyadmin
+  - /pma
+  - /cpanel
+  - /cPanel
+  
+  # Control panel and management
+  - /controlpanel
+  - /control
+  - /manage
+  - /management
+  - /manager
+  - /dashboard
+  - /console
+  
+  # Backend/private areas
+  - /backend
+  - /private
+  - /internal
+  - /secure
+  - /protected
+  - /staff
+  - /moderator
+  - /super-admin
+  - /superadmin
+  
+  # API admin endpoints
+  - /api/admin
+  - /api/v1/admin
+  - /api/admin/login
+  - /api/admin/dashboard
+  
+  # Configuration and setup
+  - /setup
+  - /install
+  - /config
+  - /configuration
+  - /settings
+  - /preferences
+  
+  # Authentication endpoints
+  - /login
+  - /signin
+  - /auth
+  - /authentication
+  - /authorize
+  - /account
+  
+  # Hidden/less common admin paths
+  - /.admin
+  - /.hidden
+  - /.secret
+  - /admin.html
+  - /administrator.html
+  - /manage.html
+  - /hidden
+  - /secret
+
+admin_indicators:
+  # Text patterns that indicate admin pages
+  - "admin"
+  - "administrator"
+  - "login"
+  - "dashboard"
+  - "management"
+  - "control panel"
+  - "user management"
+  - "settings"
+  - "configuration"
+  - "access denied"
+  - "unauthorized"
+  - "403"
