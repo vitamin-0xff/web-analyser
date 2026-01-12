@@ -1,7 +1,7 @@
 """Tests for API Key detection analyzer."""
 import pytest
 from unittest.mock import AsyncMock, patch
-from analyzers.api_keys import APIKeyAnalyzer
+from analyzers.api_keys import APIKeyPassiveAnalyzer, APIKeyActiveAnalyzer
 from models.technology import Technology, EvidenceRule
 from core.context import ScanContext
 
@@ -65,8 +65,8 @@ def mock_context():
 
 @pytest.mark.asyncio
 async def test_detects_aws_access_key(api_key_rules, mock_context):
-    """Test detection of AWS Access Key format."""
-    analyzer = APIKeyAnalyzer(api_key_rules)
+    """Test detection of AWS Access Key format in passive analyzer."""
+    analyzer = APIKeyPassiveAnalyzer(api_key_rules)
     
     # Modify context with AWS key
     modified_context = ScanContext(
@@ -100,8 +100,8 @@ async def test_detects_aws_access_key(api_key_rules, mock_context):
 
 @pytest.mark.asyncio
 async def test_detects_stripe_api_key(api_key_rules, mock_context):
-    """Test detection of Stripe API Key format."""
-    analyzer = APIKeyAnalyzer(api_key_rules)
+    """Test detection of Stripe API Key format in passive analyzer."""
+    analyzer = APIKeyPassiveAnalyzer(api_key_rules)
     
     modified_context = ScanContext(
         url=mock_context.url,
@@ -131,8 +131,8 @@ async def test_detects_stripe_api_key(api_key_rules, mock_context):
 
 @pytest.mark.asyncio
 async def test_detects_github_token(api_key_rules, mock_context):
-    """Test detection of GitHub Personal Access Token."""
-    analyzer = APIKeyAnalyzer(api_key_rules)
+    """Test detection of GitHub Personal Access Token in passive analyzer."""
+    analyzer = APIKeyPassiveAnalyzer(api_key_rules)
 
     # ghp_ followed by exactly 36 alphanumeric characters
     modified_context = ScanContext(
@@ -163,8 +163,8 @@ async def test_detects_github_token(api_key_rules, mock_context):
 
 @pytest.mark.asyncio
 async def test_detects_rsa_private_key(api_key_rules, mock_context):
-    """Test detection of RSA Private Key."""
-    analyzer = APIKeyAnalyzer(api_key_rules)
+    """Test detection of RSA Private Key in passive analyzer."""
+    analyzer = APIKeyPassiveAnalyzer(api_key_rules)
     
     private_key_content = """-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA2Z3qX2BTLS39R3wvUL3c5pGL...
@@ -202,8 +202,8 @@ MIIEpAIBAAKCAQEA2Z3qX2BTLS39R3wvUL3c5pGL...
 
 @pytest.mark.asyncio
 async def test_detects_mongodb_connection_string(api_key_rules, mock_context):
-    """Test detection of MongoDB connection string."""
-    analyzer = APIKeyAnalyzer(api_key_rules)
+    """Test detection of MongoDB Connection String in passive analyzer."""
+    analyzer = APIKeyPassiveAnalyzer(api_key_rules)
     
     modified_context = ScanContext(
         url=mock_context.url,
@@ -237,7 +237,7 @@ async def test_detects_mongodb_connection_string(api_key_rules, mock_context):
 @pytest.mark.asyncio
 async def test_no_keys_in_clean_response(api_key_rules, mock_context):
     """Test that analyzer doesn't produce false positives."""
-    analyzer = APIKeyAnalyzer(api_key_rules)
+    analyzer = APIKeyPassiveAnalyzer(api_key_rules)
     
     modified_context = ScanContext(
         url=mock_context.url,
@@ -266,8 +266,8 @@ async def test_no_keys_in_clean_response(api_key_rules, mock_context):
 
 @pytest.mark.asyncio
 async def test_handles_fetch_errors_gracefully(api_key_rules, mock_context):
-    """Test that analyzer handles network errors gracefully."""
-    analyzer = APIKeyAnalyzer(api_key_rules)
+    """Test that passive analyzer handles errors gracefully."""
+    analyzer = APIKeyPassiveAnalyzer(api_key_rules)
     
     with patch('analyzers.api_keys.fetch_url') as mock_fetch:
         mock_fetch.side_effect = Exception("Connection refused")
@@ -276,3 +276,43 @@ async def test_handles_fetch_errors_gracefully(api_key_rules, mock_context):
         
         # Should return list (might be empty or have main page results)
         assert isinstance(detections, list)
+
+
+# Tests for Active API Key Analyzer
+@pytest.mark.asyncio
+async def test_active_analyzer_probes_endpoints(api_key_rules, mock_context):
+    """Test that active analyzer makes HTTP requests to endpoints."""
+    analyzer = APIKeyActiveAnalyzer(api_key_rules)
+    
+    with patch('analyzers.api_keys.fetch_url') as mock_fetch:
+        # Simulate finding an exposed env file
+        mock_response = AsyncMock()
+        mock_response.status_code = 200
+        mock_response.text = "AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE\nAWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+        mock_fetch.return_value = mock_response
+        
+        detections = await analyzer.analyze(mock_context)
+        
+        # Should have made HTTP requests
+        assert mock_fetch.called
+        # Should detect exposed credentials
+        assert len(detections) >= 1
+
+
+@pytest.mark.asyncio
+async def test_active_analyzer_handles_404_responses(api_key_rules, mock_context):
+    """Test that active analyzer continues even when endpoints return 404."""
+    analyzer = APIKeyActiveAnalyzer(api_key_rules)
+    
+    with patch('analyzers.api_keys.fetch_url') as mock_fetch:
+        mock_response = AsyncMock()
+        mock_response.status_code = 404
+        mock_response.text = ""
+        mock_fetch.return_value = mock_response
+        
+        detections = await analyzer.analyze(mock_context)
+        
+        # Should have made HTTP requests despite 404
+        assert mock_fetch.called
+        # No credentials exposed in 404 responses
+        assert len(detections) == 0

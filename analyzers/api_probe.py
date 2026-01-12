@@ -40,7 +40,8 @@ API_ENDPOINTS = [
 
 @AnalyzerRegistry.register(
     "api_probe",
-    lambda rules: filter_by_rule_types(rules, {"api_response", "api_header", "api_endpoint"})
+    lambda rules: filter_by_rule_types(rules, {"api_response", "api_header", "api_endpoint"}),
+    analyzer_type="active"
 )
 class APIProbeAnalyzer:
     """Active analyzer that probes for API endpoints and detects backend technologies."""

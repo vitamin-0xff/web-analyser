@@ -34,7 +34,8 @@ ERROR_PARAMS = [
 
 @AnalyzerRegistry.register(
     "error_probe",
-    lambda rules: filter_by_rule_types(rules, {"error_message", "error_header", "error_page"})
+    lambda rules: filter_by_rule_types(rules, {"error_message", "error_header", "error_page"}),
+    analyzer_type="active"
 )
 class ErrorProbeAnalyzer:
     """Active analyzer that triggers errors to detect technologies from error messages."""

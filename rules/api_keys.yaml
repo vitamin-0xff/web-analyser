@@ -104,14 +104,14 @@
   category: API Credentials
   evidence:
     - type: api_key_pattern
-      pattern: '(?i)(api[_-]?key|apikey|api_secret|api-secret)["\'\s:=]+[a-zA-Z0-9\-_]{20,}'
+      pattern: "(?i)(api[_-]?key|apikey|api_secret|api-secret)[\"'\\s:=]+[a-zA-Z0-9\\-_]{20,}"
       confidence: 0.6
 
 - name: Authorization Header
   category: Authentication Tokens
   evidence:
     - type: api_key_pattern
-      pattern: '(?i)authorization["\'\s:=]+(Bearer|Token|Basic)\s+[a-zA-Z0-9\-._~+/]+'
+      pattern: "(?i)authorization[\"'\\s:=]+(Bearer|Token|Basic)\\s+[a-zA-Z0-9\\-._~+/]+"
       confidence: 0.7
 
 # Database Connection Strings
@@ -203,12 +203,12 @@
   category: Application Credentials
   evidence:
     - type: api_key_pattern
-      pattern: '(?i)(password|passwd|pwd)["\'\s:=]+[^\s"\';,]+'
+      pattern: "(?i)(password|passwd|pwd)[\"'\\s:=]+[^\\s\"';,]+"
       confidence: 0.5
 
 - name: Database Password
   category: Database Credentials
   evidence:
     - type: api_key_pattern
-      pattern: '(?i)db[_-]?password["\'\s:=]+[^\s"\';,]+'
+      pattern: "(?i)db[_-]?password[\"'\\s:=]+[^\\s\"';,]+"
       confidence: 0.6

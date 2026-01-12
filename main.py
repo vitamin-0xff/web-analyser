@@ -35,7 +35,7 @@ def main():
     parser.add_argument("--log-level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR"], help="Logging verbosity level (default: INFO)")
     parser.add_argument("--exclude", type=str, nargs="+", help="Exclude specific analyzers (e.g., --exclude html js cookies)")
     parser.add_argument("--list-analyzers", action="store_true", help="List all available analyzers and exit")
-    parser.add_argument("--active", action="store_true", help="Enable active detection (GraphQL introspection, API probing, error triggering)")
+    parser.add_argument("--analyze-mode", type=str, default="passive", choices=["passive", "active", "all"], help="Analysis mode: passive (default), active (only active analyzers), or all (both)")
     args = parser.parse_args()
     
     # Configure logging
@@ -49,7 +49,11 @@ def main():
     # List analyzers if requested
     if args.list_analyzers:
         print("Available analyzers:")
-        for name in AnalyzerRegistry.get_all_names():
+        print("\nPassive Analyzers (examine main page):")
+        for name in sorted(AnalyzerRegistry.get_analyzers_by_type("passive")):
+            print(f"  - {name}")
+        print("\nActive Analyzers (make additional HTTP requests):")
+        for name in sorted(AnalyzerRegistry.get_analyzers_by_type("active")):
             print(f"  - {name}")
         return
     
@@ -57,15 +61,21 @@ def main():
     if not args.url:
         parser.error("URL is required unless using --list-analyzers")
     
-    # Validate excluded analyzers
+    # Validate and apply analyzer mode
     exclude_set = set(args.exclude) if args.exclude else set()
     
-    # Exclude active analyzers by default unless --active flag is set
-    if not args.active:
-        active_analyzers = {'graphql', 'api_probe', 'error_probe', 'api_keys'}
+    if args.analyze_mode == "passive":
+        # Exclude all active analyzers
+        active_analyzers = set(AnalyzerRegistry.get_analyzers_by_type("active"))
         exclude_set.update(active_analyzers)
-        if not args.exclude:  # Only log if user didn't explicitly exclude anything
-            logger.info("Active detection disabled (use --active to enable GraphQL, API probing, error triggering, API key scanning)")
+        logger.info("Running passive analysis only (use --analyze-mode=active or all to enable HTTP requests)")
+    elif args.analyze_mode == "active":
+        # Exclude all passive analyzers
+        passive_analyzers = set(AnalyzerRegistry.get_analyzers_by_type("passive"))
+        exclude_set.update(passive_analyzers)
+        logger.info("Running active analysis only (credential probing and introspection)")
+    elif args.analyze_mode == "all":
+        logger.info("Running all analyzers (passive + active)")
     
     available_analyzers = set(AnalyzerRegistry.get_all_names())
     invalid_excludes = exclude_set - available_analyzers

@@ -45,7 +45,8 @@ SIMPLE_QUERY = '{"query": "{ __typename }"}'
 
 @AnalyzerRegistry.register(
     "graphql",
-    lambda rules: filter_by_rule_types(rules, {"graphql_introspection", "graphql_header"})
+    lambda rules: filter_by_rule_types(rules, {"graphql_introspection", "graphql_header"}),
+    analyzer_type="active"
 )
 class GraphQLAnalyzer:
     """Active analyzer that probes for GraphQL endpoints and introspects schemas."""

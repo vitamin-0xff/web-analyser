@@ -12,17 +12,19 @@ class AnalyzerRegistry:
     _analyzers: Dict[str, Type] = {}
     _rule_filters: Dict[str, Callable[[List[Technology]], List[Technology]]] = {}
     _order: List[str] = []  # Preserve registration order
+    _analyzer_types: Dict[str, str] = {}  # Maps analyzer name to "passive" or "active"
     
     @classmethod
-    def register(cls, name: str, rule_filter: Callable[[List[Technology]], List[Technology]] = None):
+    def register(cls, name: str, rule_filter: Callable[[List[Technology]], List[Technology]] = None, analyzer_type: str = "passive"):
         """Decorator to register an analyzer class.
         
         Args:
             name: Unique identifier for the analyzer (e.g., "headers", "html")
             rule_filter: Optional function to filter rules for this analyzer
+            analyzer_type: Either "passive" (default) or "active" to indicate if it makes HTTP requests
         
         Example:
-            @AnalyzerRegistry.register("headers", lambda rules: filter_by_types(rules, {"header"}))
+            @AnalyzerRegistry.register("headers", lambda rules: filter_by_types(rules, {"header"}), analyzer_type="passive")
             class HeadersAnalyzer:
                 def __init__(self, rules: List[Technology]):
                     self.rules = rules
@@ -30,6 +32,9 @@ class AnalyzerRegistry:
                 async def analyze(self, context: ScanContext) -> List[Detection]:
                     ...
         """
+        if analyzer_type not in ("passive", "active"):
+            raise ValueError(f"analyzer_type must be 'passive' or 'active', got {analyzer_type}")
+            
         def decorator(analyzer_class: Type):
             if name in cls._analyzers:
                 logger.warning(f"Analyzer '{name}' already registered, overwriting")
@@ -37,10 +42,11 @@ class AnalyzerRegistry:
                 cls._order.append(name)
             
             cls._analyzers[name] = analyzer_class
+            cls._analyzer_types[name] = analyzer_type
             if rule_filter:
                 cls._rule_filters[name] = rule_filter
             
-            logger.debug(f"Registered analyzer: {name} -> {analyzer_class.__name__}")
+            logger.debug(f"Registered analyzer: {name} ({analyzer_type}) -> {analyzer_class.__name__}")
             return analyzer_class
         return decorator
     
@@ -48,6 +54,16 @@ class AnalyzerRegistry:
     def get_all_names(cls) -> List[str]:
         """Get names of all registered analyzers in registration order."""
         return cls._order.copy()
+    
+    @classmethod
+    def get_analyzer_type(cls, name: str) -> str:
+        """Get analyzer type ('passive' or 'active')."""
+        return cls._analyzer_types.get(name, "passive")
+    
+    @classmethod
+    def get_analyzers_by_type(cls, analyzer_type: str) -> List[str]:
+        """Get all analyzer names of a specific type."""
+        return [name for name in cls._order if cls._analyzer_types.get(name, "passive") == analyzer_type]
     
     @classmethod
     def get_analyzer_class(cls, name: str) -> Type:
@@ -93,6 +109,7 @@ class AnalyzerRegistry:
         cls._analyzers.clear()
         cls._rule_filters.clear()
         cls._order.clear()
+        cls._analyzer_types.clear()
 
 
 def filter_by_rule_types(rules: List[Technology], allowed_types: Set[str]) -> List[Technology]:
