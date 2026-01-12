@@ -35,6 +35,7 @@ def main():
     parser.add_argument("--log-level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR"], help="Logging verbosity level (default: INFO)")
     parser.add_argument("--exclude", type=str, nargs="+", help="Exclude specific analyzers (e.g., --exclude html js cookies)")
     parser.add_argument("--list-analyzers", action="store_true", help="List all available analyzers and exit")
+    parser.add_argument("--active", action="store_true", help="Enable active detection (GraphQL introspection, API probing, error triggering)")
     args = parser.parse_args()
     
     # Configure logging
@@ -58,6 +59,14 @@ def main():
     
     # Validate excluded analyzers
     exclude_set = set(args.exclude) if args.exclude else set()
+    
+    # Exclude active analyzers by default unless --active flag is set
+    if not args.active:
+        active_analyzers = {'graphql', 'api_probe', 'error_probe'}
+        exclude_set.update(active_analyzers)
+        if not args.exclude:  # Only log if user didn't explicitly exclude anything
+            logger.info("Active detection disabled (use --active to enable GraphQL, API probing, error triggering)")
+    
     available_analyzers = set(AnalyzerRegistry.get_all_names())
     invalid_excludes = exclude_set - available_analyzers
     if invalid_excludes:

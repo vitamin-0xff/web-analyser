@@ -1,0 +1,239 @@
+# Rules for detecting technologies through active probing
+# These rules are used by GraphQL, API, and Error analyzers
+
+# GraphQL Technologies
+- name: Apollo GraphQL
+  category: GraphQL Server
+  evidence:
+    - type: graphql_introspection
+      pattern: 'apollo|apollographql'
+      confidence: 0.9
+    - type: graphql_header
+      name: X-Apollo-Tracing
+      pattern: '.*'
+      confidence: 1.0
+
+- name: Hasura
+  category: GraphQL Server
+  evidence:
+    - type: graphql_introspection
+      pattern: 'hasura'
+      confidence: 0.95
+    - type: graphql_header
+      name: X-Hasura-
+      pattern: '.*'
+      confidence: 1.0
+
+- name: GraphQL Yoga
+  category: GraphQL Server
+  evidence:
+    - type: graphql_introspection
+      pattern: 'graphql-yoga'
+      confidence: 0.9
+
+- name: AWS AppSync
+  category: GraphQL Server
+  evidence:
+    - type: graphql_header
+      name: X-Amzn-RequestId
+      pattern: '.*'
+      confidence: 0.7
+    - type: graphql_introspection
+      pattern: 'appsync'
+      confidence: 0.9
+
+# API Framework Detection
+- name: FastAPI
+  category: Web Framework
+  evidence:
+    - type: api_response
+      pattern: '"detail":|"openapi":'
+      confidence: 0.6
+    - type: api_response
+      pattern: 'FastAPI'
+      confidence: 0.9
+    - type: api_header
+      name: Server
+      pattern: 'uvicorn'
+      confidence: 0.5
+
+- name: Django REST Framework
+  category: Web Framework
+  evidence:
+    - type: api_response
+      pattern: 'django|DRF|browsable API'
+      confidence: 0.7
+    - type: api_header
+      name: X-Frame-Options
+      pattern: 'DENY'
+      confidence: 0.3
+    - type: error_message
+      pattern: 'django\.core|django\.db'
+      confidence: 0.9
+
+- name: Express.js
+  category: Web Framework
+  evidence:
+    - type: api_header
+      name: X-Powered-By
+      pattern: 'Express'
+      confidence: 0.9
+    - type: error_message
+      pattern: 'at .*express'
+      confidence: 0.8
+
+- name: Flask
+  category: Web Framework
+  evidence:
+    - type: api_header
+      name: Server
+      pattern: 'Werkzeug'
+      confidence: 0.8
+    - type: error_message
+      pattern: 'flask\.|werkzeug\.'
+      confidence: 0.9
+
+- name: Spring Boot
+  category: Web Framework
+  evidence:
+    - type: api_response
+      pattern: '"timestamp":\s*\d+,\s*"status":\s*\d+,\s*"error":'
+      confidence: 0.7
+    - type: error_message
+      pattern: 'org\.springframework'
+      confidence: 0.9
+    - type: api_header
+      name: X-Application-Context
+      pattern: '.*'
+      confidence: 0.9
+
+- name: ASP.NET Core
+  category: Web Framework
+  evidence:
+    - type: api_header
+      name: Server
+      pattern: 'Kestrel'
+      confidence: 0.9
+    - type: error_message
+      pattern: 'System\..*Exception|Microsoft\.AspNetCore'
+      confidence: 0.8
+
+- name: Ruby on Rails
+  category: Web Framework
+  evidence:
+    - type: api_response
+      pattern: '"errors":\s*\[|\{"error":'
+      confidence: 0.4
+    - type: error_message
+      pattern: 'actionpack|activerecord|railties'
+      confidence: 0.9
+    - type: api_header
+      name: X-Request-Id
+      pattern: '[a-f0-9-]{36}'
+      confidence: 0.3
+
+- name: Laravel
+  category: Web Framework
+  evidence:
+    - type: error_message
+      pattern: 'Illuminate\\\\|Laravel\\\\|artisan'
+      confidence: 0.9
+    - type: api_response
+      pattern: 'laravel'
+      confidence: 0.6
+
+# Error Page Detection
+- name: Nginx
+  category: Web Server
+  evidence:
+    - type: error_page
+      pattern: '<center>nginx</center>'
+      confidence: 0.95
+    - type: error_header
+      name: Server
+      pattern: 'nginx'
+      confidence: 0.9
+
+- name: Apache
+  category: Web Server
+  evidence:
+    - type: error_page
+      pattern: 'Apache.*Server at'
+      confidence: 0.9
+    - type: error_header
+      name: Server
+      pattern: 'Apache'
+      confidence: 0.9
+
+- name: IIS
+  category: Web Server
+  evidence:
+    - type: error_page
+      pattern: 'Internet Information Services|IIS'
+      confidence: 0.9
+    - type: error_header
+      name: Server
+      pattern: 'Microsoft-IIS'
+      confidence: 0.95
+
+# Database Detection through Errors
+- name: PostgreSQL
+  category: Database
+  evidence:
+    - type: error_message
+      pattern: 'PostgreSQL|psycopg2|pg_|postgres'
+      confidence: 0.9
+
+- name: MySQL
+  category: Database
+  evidence:
+    - type: error_message
+      pattern: 'MySQL|mysqli|MariaDB'
+      confidence: 0.9
+
+- name: MongoDB
+  category: Database
+  evidence:
+    - type: error_message
+      pattern: 'MongoDB|MongoError|mongoose'
+      confidence: 0.9
+
+- name: Redis
+  category: Cache
+  evidence:
+    - type: error_message
+      pattern: 'Redis|REDIS|redis\.clients'
+      confidence: 0.9
+
+# Cloud Platform Detection
+- name: AWS Lambda
+  category: Serverless
+  evidence:
+    - type: api_header
+      name: X-Amzn-RequestId
+      pattern: '.*'
+      confidence: 0.7
+    - type: api_header
+      name: X-Amzn-Trace-Id
+      pattern: '.*'
+      confidence: 0.7
+
+- name: Google Cloud Functions
+  category: Serverless
+  evidence:
+    - type: api_header
+      name: Function-Execution-Id
+      pattern: '.*'
+      confidence: 0.9
+    - type: api_header
+      name: X-Cloud-Trace-Context
+      pattern: '.*'
+      confidence: 0.7
+
+- name: Azure Functions
+  category: Serverless
+  evidence:
+    - type: api_header
+      name: X-Azure-Ref
+      pattern: '.*'
+      confidence: 0.8

@@ -31,6 +31,10 @@ import analyzers.forms
 import analyzers.sri
 import analyzers.comments
 import analyzers.assets
+# Active detection analyzers (require --active flag)
+import analyzers.graphql
+import analyzers.api_probe
+import analyzers.error_probe
 
 from models.detection import Detection, Evidence
 from models.technology import Technology, EvidenceRule
