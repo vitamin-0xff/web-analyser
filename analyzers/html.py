@@ -1,0 +1,56 @@
+from typing import List
+import re
+from core.context import ScanContext
+from models.detection import Detection, Evidence
+from models.technology import Technology
+
+class HtmlAnalyzer:
+    def __init__(self, rules: List[Technology]):
+        self.rules = rules
+
+    async def analyze(self, context: ScanContext) -> List[Detection]:
+        detections: List[Detection] = []
+        html_content = context.html
+
+        for tech in self.rules:
+            for rule in tech.evidence_rules:
+                if rule.type not in ["html_pattern", "html_comment"]:
+                    continue
+
+                if rule.pattern:
+                    match = re.search(rule.pattern, html_content, re.IGNORECASE)
+                    if match:
+                        detections.append(
+                            Detection(
+                                name=tech.name,
+                                category=tech.category,
+                                confidence=rule.confidence,
+                                evidence=Evidence(
+                                    type=rule.type,
+                                    pattern=rule.pattern,
+                                    value=match.group(0) # The matched string
+                                ),
+                                version=self._extract_version(match.group(0)) # Try to extract version from match
+                            )
+                        )
+                # For exact value match in HTML (less common for HTML patterns)
+                elif rule.value and rule.value.lower() in html_content.lower():
+                    detections.append(
+                        Detection(
+                            name=tech.name,
+                            category=tech.category,
+                            confidence=rule.confidence,
+                            evidence=Evidence(
+                                type=rule.type,
+                                value=rule.value
+                            ),
+                            version=tech.version
+                        )
+                    )
+
+        return detections
+
+    def _extract_version(self, text: str) -> str | None:
+        """Extracts a version number from a string."""
+        match = re.search(r'(\d+\.\d+(\.\d+)?)', text)
+        return match.group(1) if match else None

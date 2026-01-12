@@ -1,0 +1,270 @@
+= Website Technology Fingerprinting CLI
+:toc:
+:toclevels: 3
+
+== 1. System Description (App Purpose)
+
+=== Role
+A passive technology-fingerprinting engine that analyzes websites to identify underlying technologies such as frontend frameworks, backend platforms, infrastructure, analytics tools, CMSs, and security components.
+
+=== Core Objective
+Given one or more URLs, the system inspects:
+
+* HTTP headers
+* HTML structure
+* JavaScript variables and libraries
+* Network resources
+* DNS and TLS metadata
+* Any Level you know we didn't mention
+
+It returns a structured, explainable list of detected technologies with confidence scores.
+
+=== Expected Capabilities
+* Stateless execution per target
+* Deterministic output for identical inputs
+* Modular detection rules
+* Pluggable analyzers (headers, DOM, JS, DNS, TLS)
+* CLI-first, automation-friendly design
+
+=== Output Contract
+Each detection must include:
+
+* `name`
+* `category`
+* `version` (if inferred)
+* `confidence`
+* `evidence`
+
+
+== 2. High-Level Architecture
+
+[source]
+----
+cli/
+ └── main.py
+
+core/
+ ├── engine.py
+ ├── context.py
+ └── pipeline.py
+
+fetch/
+ ├── http_client.py
+ ├── dns_client.py
+ └── tls_client.py
+
+analyzers/
+ ├── headers.py
+ ├── html.py
+ ├── js.py
+ ├── cookies.py
+ └── network.py
+
+rules/
+ ├── frontend.yaml
+ ├── backend.yaml
+ ├── analytics.yaml
+ └── cms.yaml
+
+models/
+ ├── detection.py
+ └── technology.py
+
+output/
+ ├── json_formatter.py
+ └── table_formatter.py
+----
+
+== 3. Core Design Principles
+
+=== 3.1 Single Responsibility Principle
+Each module must do exactly one thing.
+
+Examples:
+* `http_client.py` handles HTTP fetching only
+* `headers.py` analyzes HTTP headers only
+* `rules/*.yaml` define detection logic only
+* `engine.py` orchestrates execution only
+
+Never mix:
+* Fetching and detection
+* Parsing and formatting
+* Rule definition and execution
+
+---
+
+=== 3.2 Loose Coupling
+Modules communicate via shared data contracts.
+
+.Bad
+[source,python]
+----
+headers.detect(response, html_parser)
+----
+
+.Good
+[source,python]
+----
+headers.detect(context)
+----
+
+---
+
+=== 3.3 Open–Closed Principle
+Adding a new technology must not require modifying source code.
+
+Detection rules must be:
+* Data-driven
+* Declarative
+* Externalized (YAML / JSON)
+
+.Rule example
+[source,yaml]
+----
+name: React
+category: frontend
+evidence:
+  - type: js_global
+    pattern: "__REACT_DEVTOOLS_GLOBAL_HOOK__"
+----
+
+---
+
+=== 3.4 Deterministic Execution
+* Identical input produces identical output
+* No randomness
+* Explicit analyzer order
+* Stable confidence calculations
+
+---
+
+== 4. Detection Strategy
+
+=== Detection Types (Hits)
+Multiple weak signals are preferred over a single strong signal.
+
+Supported hit types:
+* header
+* cookie
+* html_pattern
+* js_global
+* script_src
+* meta_tag
+* response_body
+* tls_issuer
+* dns_record
+
+Each hit contributes to a confidence score.
+
+---
+
+=== Confidence Scoring
+* Each hit has a weighted value
+* Total confidence is capped at `1.0`
+* Detection is valid only above a threshold
+
+[source,python]
+----
+confidence = min(1.0, sum(hit.weights))
+----
+
+Avoid detection based on a single weak indicator.
+
+---
+
+== 5. Scan Context Object
+
+All analyzers operate on a shared, immutable context.
+
+[source,python]
+----
+@dataclass(frozen=True)
+class ScanContext:
+    url: str
+    headers: dict
+    html: str
+    cookies: dict
+    scripts: list[str]
+    js_globals: set[str]
+    tls: TLSInfo | None
+----
+
+Benefits:
+* No side effects
+* Explicit dependencies
+* High testability
+
+---
+
+== 6. Modularity Rules
+
+* An analyzer must:
+** Accept a context object
+** Return detections
+** Never fetch data
+** Never produce output
+
+* The engine must:
+** Orchestrate analyzers
+** Merge detections
+** Resolve conflicts
+** Apply confidence thresholds
+
+* Output modules must:
+** Format results only
+** Never modify detection data
+
+---
+
+== 7. CLI Best Practices
+
+* Input sources:
+** Single URL
+** File input
+** Standard input (pipe)
+
+* Exit codes:
+** `0` Success
+** `1` Network failure
+** `2` Invalid input
+
+* Common flags:
+** `--json`
+** `--confidence-threshold`
+** `--categories frontend,backend`
+
+---
+
+== 8. Testing Strategy
+
+* Unit tests per analyzer
+* Golden-file tests for known targets
+* Fully mocked network layer
+* Detection rule schema validation
+
+---
+
+== 9. Performance Guidelines
+
+* One HTTP request per URL by default
+* Asynchronous fetch layer
+* Skip analyzers when context data is missing
+* Cache DNS and TLS lookups
+
+---
+
+== 12. Open to any Ideas
+---
+== 13. Version control (git)
+  * Any new feature, new branch, test then merge on success 
+---
+== 13. Inspire from wappalyzer
+
+[quote]
+____
+Act as a passive website technology fingerprinting engine.  
+Analyze URLs using modular, data-driven detection rules.  
+Produce deterministic, explainable, structured output.  
+Enforce single responsibility, loose coupling, and open-closed design principles.
+____
+

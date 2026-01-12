@@ -1,0 +1,25 @@
+# Rules for detecting CSS frameworks
+
+- name: Bootstrap
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: |
+        bootstrap(\.min)?\.css
+      confidence: 0.9
+    - type: html_pattern
+      pattern: |
+        class=".*(col-|container|row|card|btn).*"
+      confidence: 0.4
+
+- name: Tailwind CSS
+  category: CSS Framework
+  evidence:
+    - type: css_link
+      pattern: |
+        tailwind(\.min)?\.css
+      confidence: 0.9
+    - type: html_pattern
+      pattern: |
+        class=".*(flex|grid|p-|m-|text-).*"
+      confidence: 0.5

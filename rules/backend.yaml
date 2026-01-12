@@ -1,0 +1,86 @@
+# Rules for detecting backend technologies
+
+- name: Nginx
+  category: Web Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "nginx" # Case-insensitive regex
+      confidence: 0.8
+
+- name: Apache HTTP Server
+  category: Web Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "apache"
+      confidence: 0.8
+
+- name: Express
+  category: Web Framework
+  evidence:
+    - type: header
+      name: "X-Powered-By"
+      pattern: "express"
+      confidence: 0.9
+
+- name: PHP
+  category: Programming Language
+  evidence:
+    - type: header
+      name: "X-Powered-By"
+      pattern: "php"
+      confidence: 0.7
+    - type: cookie
+      name: "PHPSESSID"
+      confidence: 0.6
+
+- name: Google Web Server
+  category: Web Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "gws"
+      confidence: 0.8
+
+- name: Microsoft-IIS
+  category: Web Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Microsoft-IIS"
+      confidence: 0.9
+
+- name: LiteSpeed
+  category: Web Server
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "LiteSpeed"
+      confidence: 0.9
+
+- name: Django
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "csrftoken"
+      confidence: 0.8
+
+- name: Ruby on Rails
+  category: Web Framework
+  evidence:
+    - type: cookie
+      name: "_session_id"
+      confidence: 0.8
+
+- name: ASP.NET
+  category: Web Framework
+  evidence:
+    - type: header
+      name: "X-Powered-By"
+      pattern: "ASP.NET"
+      confidence: 0.9
+    - type: header
+      name: "X-AspNet-Version"
+      pattern: "." # Any value indicates presence
+      confidence: 0.9

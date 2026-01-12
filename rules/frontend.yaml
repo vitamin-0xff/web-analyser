@@ -1,0 +1,49 @@
+# Rules for detecting frontend technologies
+
+- name: WordPress
+  category: CMS
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <meta\s+name=["']generator["']\s+content=["'][^"']*wordpress[^"']*["']>
+      confidence: 0.9
+
+- name: Jekyll
+  category: Static Site Generator
+  evidence:
+    - type: html_comment
+      pattern: |
+        <!--\s*generated\s+by\s+jekyll\s*-->
+      confidence: 1.0
+
+- name: React
+  category: Frontend Framework
+  evidence:
+    - type: html_pattern
+      pattern: |
+        <div\s+id=["'](?:react-)?root["']>
+      confidence: 0.3 # Weak signal alone
+
+- name: Vue.js
+  category: Frontend Framework
+  evidence:
+    - type: html_pattern
+      pattern: id=["']app["']
+      confidence: 0.3
+    - type: html_pattern
+      pattern: 'data-v-app'
+      confidence: 0.9
+
+- name: Svelte
+  category: Frontend Framework
+  evidence:
+    - type: html_pattern
+      pattern: 'data-svelte'
+      confidence: 0.9
+
+- name: jQuery
+  category: JavaScript Library
+  evidence:
+    - type: script_src
+      pattern: 'jquery.*\.js'
+      confidence: 0.9

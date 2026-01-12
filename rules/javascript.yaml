@@ -1,0 +1,61 @@
+# Rules for detecting JavaScript technologies
+
+- name: React
+  category: Frontend Framework
+  evidence:
+    - type: script_src
+      pattern: 'react(\.min)?\.js'
+      confidence: 0.7
+    - type: js_global
+      pattern: '__REACT_DEVTOOLS_GLOBAL_HOOK__|React'
+      confidence: 0.9
+
+- name: Angular
+  category: Frontend Framework
+  evidence:
+    - type: script_src
+      pattern: 'angular(\.min)?\.js'
+      confidence: 0.7
+    - type: js_global
+      pattern: 'angular'
+      confidence: 0.9
+
+- name: Vue.js
+  category: Frontend Framework
+  evidence:
+    - type: script_src
+      pattern: 'vue(\.min)?\.js'
+      confidence: 0.7
+    - type: js_global
+      pattern: 'Vue'
+      confidence: 0.9
+
+- name: jQuery
+  category: JavaScript Library
+  evidence:
+    - type: js_global
+      pattern: 'jQuery|\$'
+      confidence: 0.9
+    - type: script_src
+      pattern: 'jquery.*\.js'
+      confidence: 0.9
+
+- name: Lodash
+  category: JavaScript Library
+  evidence:
+    - type: js_global
+      pattern: '_'
+      confidence: 0.7 # Can be generic
+    - type: script_src
+      pattern: 'lodash.*\.js'
+      confidence: 0.9
+
+- name: Moment.js
+  category: JavaScript Library
+  evidence:
+    - type: js_global
+      pattern: 'moment'
+      confidence: 0.9
+    - type: script_src
+      pattern: 'moment.*\.js'
+      confidence: 0.9

@@ -1,0 +1,45 @@
+# Rules for detecting technologies via network information (TLS, DNS)
+
+- name: Let's Encrypt
+  category: Certificate Authority
+  evidence:
+    - type: tls_issuer
+      name: "commonName"
+      pattern: "let's encrypt"
+      confidence: 0.9
+
+- name: Cloudflare
+  category: CDN
+  evidence:
+    - type: tls_issuer
+      name: "organizationName"
+      pattern: "cloudflare"
+      confidence: 0.9
+    - type: dns_record
+      name: "CNAME"
+      pattern: "cloudflare.net"
+      confidence: 0.8
+
+- name: Amazon Web Services
+  category: IaaS
+  evidence:
+    - type: dns_record
+      name: "CNAME"
+      pattern: "amazonaws.com"
+      confidence: 0.8
+
+- name: Microsoft Azure
+  category: IaaS
+  evidence:
+    - type: dns_record
+      name: "CNAME"
+      pattern: "azurewebsites.net|cloudapp.net"
+      confidence: 0.8
+
+- name: Google Search Console
+  category: SEO
+  evidence:
+    - type: dns_record
+      name: "TXT"
+      pattern: "google-site-verification"
+      confidence: 0.7
