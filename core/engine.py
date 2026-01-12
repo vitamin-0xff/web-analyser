@@ -2,6 +2,7 @@ from urllib.parse import urlparse, urljoin
 import re
 import hashlib
 from core.context import ScanContext, TLSInfo
+from core.cache import get_cache
 from fetch.http_client import fetch_url
 from fetch.dns_client import get_dns_records
 from fetch.tls_client import get_tls_info
@@ -210,21 +211,46 @@ class Engine:
         return context
 
     async def _fetch_robots_txt(self, base_url: str) -> Optional[str]:
-        """Fetch /robots.txt from the domain."""
+        """Fetch /robots.txt from the domain with caching."""
+        cache = get_cache()
+        cache_key = f"robots_txt:{base_url}"
+        
+        # Check cache first
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return cached
+        
         try:
             resp = await fetch_url(f"{base_url}/robots.txt")
-            return resp.text if resp.status_code == 200 else None
+            result = resp.text if resp.status_code == 200 else None
+            # Cache for 10 minutes (robots.txt changes infrequently)
+            cache.set(cache_key, result, ttl_seconds=600)
+            return result
         except:
+            cache.set(cache_key, None, ttl_seconds=600)
             return None
 
     async def _fetch_favicon_hash(self, base_url: str) -> Optional[str]:
-        """Fetch favicon.ico and compute MD5 hash."""
+        """Fetch favicon.ico and compute MD5 hash with caching."""
+        cache = get_cache()
+        cache_key = f"favicon_hash:{base_url}"
+        
+        # Check cache first
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return cached
+        
         try:
             resp = await fetch_url(f"{base_url}/favicon.ico")
             if resp.status_code == 200:
-                return hashlib.md5(resp.content).hexdigest()
+                result = hashlib.md5(resp.content).hexdigest()
+                # Cache for 1 hour (favicons change rarely)
+                cache.set(cache_key, result, ttl_seconds=3600)
+                return result
+            cache.set(cache_key, None, ttl_seconds=3600)
             return None
         except:
+            cache.set(cache_key, None, ttl_seconds=3600)
             return None
 
     async def _fetch_sitemaps(self, base_url: str, robots_txt: str) -> List[str]:
