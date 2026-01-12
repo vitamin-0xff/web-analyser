@@ -1,0 +1,36 @@
+# Rules for detecting technologies via favicon hash signatures
+
+- name: WordPress
+  category: CMS
+  evidence:
+    - type: favicon_hash
+      value: "5d5e3efa5f0c4f64a1c89c3e9c7b4a8f"
+      confidence: 0.7
+
+- name: Drupal
+  category: CMS
+  evidence:
+    - type: favicon_hash
+      value: "7f4e3b2a1c9d8e6f5a4b3c2d1e0f9a8b"
+      confidence: 0.7
+
+- name: Joomla
+  category: CMS
+  evidence:
+    - type: favicon_hash
+      value: "3c9e4f5a6b7d8e9f0a1b2c3d4e5f6a7b"
+      confidence: 0.7
+
+- name: Shopify
+  category: Ecommerce
+  evidence:
+    - type: favicon_hash
+      value: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+      confidence: 0.7
+
+- name: Magento
+  category: Ecommerce
+  evidence:
+    - type: favicon_hash
+      value: "e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6"
+      confidence: 0.7

@@ -81,6 +81,12 @@
     - type: js_global
       pattern: 'gtag|ga'
       confidence: 0.7
+    - type: script_content_pattern
+      pattern: 'gtag\(|ga\(|GoogleAnalyticsObject'
+      confidence: 0.8
+    - type: inline_js_variable
+      pattern: '__gaTracker|_gaq'
+      confidence: 0.8
 
 - name: Alpine.js
   category: JavaScript Library
@@ -227,6 +233,9 @@
     - type: js_global
       pattern: 'mixpanel'
       confidence: 0.8
+    - type: script_content_pattern
+      pattern: 'mixpanel\.init|mixpanel\.track'
+      confidence: 0.9
 
 - name: Hotjar
   category: Analytics
@@ -237,6 +246,9 @@
     - type: js_global
       pattern: 'hj'
       confidence: 0.6
+    - type: script_content_pattern
+      pattern: 'hj\(|hjid|hjsv'
+      confidence: 0.8
 
 - name: Matomo
   category: Analytics

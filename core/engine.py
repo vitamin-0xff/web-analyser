@@ -1,5 +1,6 @@
 from urllib.parse import urlparse, urljoin
 import re
+import hashlib
 from core.context import ScanContext, TLSInfo
 from fetch.http_client import fetch_url
 from fetch.dns_client import get_dns_records
@@ -20,6 +21,11 @@ from analyzers.robots_sitemap import RobotsSitemapAnalyzer
 from analyzers.http_details import HTTPDetailsAnalyzer
 from analyzers.storage import StorageAnalyzer
 from analyzers.endpoints import EndpointsAnalyzer
+from analyzers.script_content import ScriptContentAnalyzer
+from analyzers.favicon import FaviconAnalyzer
+from analyzers.forms import FormsAnalyzer
+from analyzers.sri import SRIAnalyzer
+from analyzers.comments import CommentsAnalyzer
 from models.detection import Detection, Evidence
 from models.technology import Technology, EvidenceRule
 from rules.rules_loader import load_rules
@@ -96,6 +102,22 @@ class Engine:
         self.endpoints_analyzer = EndpointsAnalyzer(
             _filter_technologies_by_rule_types(self.rules, {"graphql_endpoint", "openapi_url", "api_pattern"})
         )
+        # PHASE 1: Passive analyzers
+        self.script_content_analyzer = ScriptContentAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"script_content_pattern", "inline_js_variable"})
+        )
+        self.favicon_analyzer = FaviconAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"favicon_hash"})
+        )
+        self.forms_analyzer = FormsAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"form_action_pattern", "hidden_field_name"})
+        )
+        self.sri_analyzer = SRIAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"sri_hash"})
+        )
+        self.comments_analyzer = CommentsAnalyzer(
+            _filter_technologies_by_rule_types(self.rules, {"html_comment", "css_comment", "js_comment"})
+        )
 
     async def scan_url(self, url: str) -> ScanContext:
         loop = asyncio.get_running_loop()
@@ -153,6 +175,9 @@ class Engine:
         robots_txt = await self._fetch_robots_txt(base_url)
         sitemaps = await self._fetch_sitemaps(base_url, robots_txt or "")
 
+        # 8. NEW: Fetch favicon and compute hash
+        favicon_hash = await self._fetch_favicon_hash(base_url)
+
         context = ScanContext(
             url=url,
             headers=headers,
@@ -170,7 +195,8 @@ class Engine:
             server_timing=headers.get('server-timing'),
             robots_txt=robots_txt,
             sitemaps=sitemaps or [],
-            wasm_modules=wasm_modules or []
+            wasm_modules=wasm_modules or [],
+            favicon_hash=favicon_hash
         )
 
         return context
@@ -180,6 +206,16 @@ class Engine:
         try:
             resp = await fetch_url(f"{base_url}/robots.txt")
             return resp.text if resp.status_code == 200 else None
+        except:
+            return None
+
+    async def _fetch_favicon_hash(self, base_url: str) -> Optional[str]:
+        """Fetch favicon.ico and compute MD5 hash."""
+        try:
+            resp = await fetch_url(f"{base_url}/favicon.ico")
+            if resp.status_code == 200:
+                return hashlib.md5(resp.content).hexdigest()
+            return None
         except:
             return None
 
@@ -217,6 +253,12 @@ class Engine:
         detections.extend(await self.http_details_analyzer.analyze(context))
         detections.extend(await self.storage_analyzer.analyze(context))
         detections.extend(await self.endpoints_analyzer.analyze(context))
+        # PHASE 1: Passive analyzers
+        detections.extend(await self.script_content_analyzer.analyze(context))
+        detections.extend(await self.favicon_analyzer.analyze(context))
+        detections.extend(await self.forms_analyzer.analyze(context))
+        detections.extend(await self.sri_analyzer.analyze(context))
+        detections.extend(await self.comments_analyzer.analyze(context))
         return self._aggregate_detections(detections)
 
     def _aggregate_detections(self, detections: List[Detection]) -> List[Detection]:

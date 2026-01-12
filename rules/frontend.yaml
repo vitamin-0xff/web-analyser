@@ -7,6 +7,9 @@
       pattern: |
         <meta\s+name=["']generator["']\s+content=["'][^"']*wordpress[^"']*["']>
       confidence: 0.9
+    - type: html_comment
+      pattern: 'WordPress|Theme Name:|Theme URI:'
+      confidence: 0.7
 
 - name: Jekyll
   category: Static Site Generator
@@ -23,6 +26,9 @@
       pattern: |
         <div\s+id=["'](?:react-)?root["']>
       confidence: 0.3 # Weak signal alone
+    - type: js_comment
+      pattern: '@license React|React version'
+      confidence: 0.6
 
 - name: Vue.js
   category: Frontend Framework
@@ -33,6 +39,9 @@
     - type: html_pattern
       pattern: 'data-v-app'
       confidence: 0.9
+    - type: js_comment
+      pattern: 'Vue\.js v[0-9]+|@vue/'
+      confidence: 0.7
 
 - name: Svelte
   category: Frontend Framework

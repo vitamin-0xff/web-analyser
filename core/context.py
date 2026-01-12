@@ -31,3 +31,6 @@ class ScanContext:
     
     # NEW: WebAssembly
     wasm_modules: Optional[List[str]] = field(default_factory=list)
+    
+    # NEW: Favicon hash for passive fingerprinting
+    favicon_hash: Optional[str] = None

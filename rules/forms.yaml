@@ -1,0 +1,80 @@
+# Rules for detecting technologies via form patterns and hidden fields
+
+- name: Django
+  category: Backend Framework
+  evidence:
+    - type: hidden_field_name
+      value: csrfmiddlewaretoken
+      confidence: 0.9
+
+- name: ASP.NET
+  category: Backend Framework
+  evidence:
+    - type: hidden_field_name
+      value: __VIEWSTATE
+      confidence: 0.9
+    - type: hidden_field_name
+      value: __EVENTVALIDATION
+      confidence: 0.7
+
+- name: Ruby on Rails
+  category: Backend Framework
+  evidence:
+    - type: hidden_field_name
+      value: authenticity_token
+      confidence: 0.8
+
+- name: Laravel
+  category: Backend Framework
+  evidence:
+    - type: hidden_field_name
+      value: _token
+      confidence: 0.7
+
+- name: Magento
+  category: Ecommerce
+  evidence:
+    - type: hidden_field_name
+      value: form_key
+      confidence: 0.8
+
+- name: WooCommerce
+  category: Ecommerce
+  evidence:
+    - type: hidden_field_name
+      value: _wp_http_referer
+      confidence: 0.6
+    - type: form_action_pattern
+      pattern: '\?wc-ajax='
+      confidence: 0.7
+
+- name: PrestaShop
+  category: Ecommerce
+  evidence:
+    - type: hidden_field_name
+      value: submitMessage
+      confidence: 0.6
+
+- name: TYPO3
+  category: CMS
+  evidence:
+    - type: hidden_field_name
+      value: __referrer[@extension]
+      confidence: 0.8
+
+- name: Craft CMS
+  category: CMS
+  evidence:
+    - type: hidden_field_name
+      value: CRAFT_CSRF_TOKEN
+      confidence: 0.9
+
+- name: SharePoint
+  category: CMS
+  evidence:
+    - type: form_action_pattern
+      pattern: '/_layouts/\\d+/'
+      confidence: 0.7
+    - type: hidden_field_name
+      value: __REQUESTDIGEST
+      confidence: 0.8

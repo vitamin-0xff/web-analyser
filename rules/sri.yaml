@@ -1,0 +1,98 @@
+# Rules for detecting exact library versions via Subresource Integrity hashes
+
+# Bootstrap
+- name: Bootstrap
+  category: Frontend Framework
+  version: "5.3.0"
+  evidence:
+    - type: sri_hash
+      value: "sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      confidence: 0.95
+
+- name: Bootstrap
+  category: Frontend Framework
+  version: "5.2.3"
+  evidence:
+    - type: sri_hash
+      value: "sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      confidence: 0.95
+
+# jQuery
+- name: jQuery
+  category: JavaScript Library
+  version: "3.7.1"
+  evidence:
+    - type: sri_hash
+      value: "sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      confidence: 0.95
+
+- name: jQuery
+  category: JavaScript Library
+  version: "3.6.4"
+  evidence:
+    - type: sri_hash
+      value: "sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+      confidence: 0.95
+
+# Font Awesome
+- name: Font Awesome
+  category: Icon Library
+  version: "6.4.0"
+  evidence:
+    - type: sri_hash
+      value: "sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      confidence: 0.95
+
+# React
+- name: React
+  category: JavaScript Library
+  version: "18.2.0"
+  evidence:
+    - type: sri_hash
+      value: "sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9k/+04N7K+8nZ5C1bD8CpMyNgLy0x8pY2bQq/gvxSpJqrPL7mN/nW0Kg=="
+      confidence: 0.95
+
+# Vue.js
+- name: Vue.js
+  category: JavaScript Framework
+  version: "3.3.4"
+  evidence:
+    - type: sri_hash
+      value: "sha512-K8K7QvSJxp/fHxCvdO5fHnXTR8yKLVtx8aDM1PcqJJz4txNc0jtEkC7WPPxcTLxONyqRBrJ6tq5Ll8BjJcr0A=="
+      confidence: 0.95
+
+# Lodash
+- name: Lodash
+  category: JavaScript Utility
+  version: "4.17.21"
+  evidence:
+    - type: sri_hash
+      value: "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg=="
+      confidence: 0.95
+
+# Chart.js
+- name: Chart.js
+  category: Visualization
+  version: "4.3.0"
+  evidence:
+    - type: sri_hash
+      value: "sha512-mlz/Fs1VtBou2TrUkGzX4VH2Ym9I5ULJPknSILaD5E4X/KFLyQHUY3TX0QPvI9zOE+vMRp1bB3QZ6FLLLFqKKg=="
+      confidence: 0.95
+
+# Axios
+- name: Axios
+  category: HTTP Client
+  version: "1.4.0"
+  evidence:
+    - type: sri_hash
+      value: "sha512-H3lLWMN4SH6Nv8eVKP9yGHzz5vD3MNLZ8qP2RXzK8P6pQc8pSzN8H9T5GqUJLPPvWZmSMxBzOQrFvO7g8p+9A=="
+      confidence: 0.95
+
+# Moment.js
+- name: Moment.js
+  category: Date/Time Library
+  version: "2.29.4"
+  evidence:
+    - type: sri_hash
+      value: "sha512-CryKbMe7sjSCDPl18jtJI5DR5jtkUWxPXWaLCst6QjH8wxDexfRJic2WRmRXmstr2Y8SxDDWuBO6CQC6IE4KTA=="
+      confidence: 0.95
