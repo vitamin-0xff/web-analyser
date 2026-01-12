@@ -21,9 +21,13 @@ VERSION_PATTERNS = [
 ]
 
 
-def extract_version_from_url(url: str) -> Optional[str]:
+def extract_version_from_url(url: str, tech_name: Optional[str] = None) -> Optional[str]:
     """
     Extract version from a URL path or filename.
+    
+    Args:
+        url: The URL to extract version from
+        tech_name: Optional technology name for context-specific extraction
     
     Examples:
         - /jquery-3.6.0.min.js -> 3.6.0
@@ -86,7 +90,7 @@ def extract_version_from_string(text: str, technology: str = None) -> Optional[s
     return None
 
 
-def extract_version_from_meta_tag(meta_content: str, meta_name: str = None) -> Optional[str]:
+def extract_version_from_meta_tag(meta_content: str, tech_name: Optional[str] = None, meta_name: Optional[str] = None) -> Optional[str]:
     """
     Extract version from meta tag content.
     
@@ -96,6 +100,7 @@ def extract_version_from_meta_tag(meta_content: str, meta_name: str = None) -> O
     
     Args:
         meta_content: The content attribute value
+        tech_name: Technology name for context-specific extraction
         meta_name: The name attribute value (for context)
     
     Returns:

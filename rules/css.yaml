@@ -2,6 +2,7 @@
 
 - name: Bootstrap
   category: CSS Framework
+  version_pattern: 'bootstrap[@/-]v?(\d+\.\d+\.\d+[-.\w]*)'
   evidence:
     - type: css_link
       pattern: |
@@ -14,6 +15,7 @@
 
 - name: Tailwind CSS
   category: CSS Framework
+  version_pattern: 'tailwind[@/-]v?(\d+\.\d+\.\d+[-.\w]*)'
   evidence:
     - type: css_link
       pattern: |
@@ -28,6 +30,7 @@
 
 - name: Bulma
   category: CSS Framework
+  version_pattern: 'bulma[@/-]v?(\d+\.\d+\.\d+[-.\w]*)'
   evidence:
     - type: css_link
       pattern: |
