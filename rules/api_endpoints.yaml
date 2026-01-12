@@ -2,15 +2,22 @@
 # Used by api_probe.py to detect REST APIs and API documentation
 
 endpoints:
+  # Core API paths
   - /api
+  - /api/v0
   - /api/v1
   - /api/v2
   - /api/v3
+  - /api/v4
+  - /v0
   - /v1
   - /v2
   - /v3
+  - /v4
   - /rest
   - /api/rest
+
+  # Documentation endpoints
   - /api/docs
   - /api/swagger.json
   - /api/openapi.json
@@ -19,9 +26,50 @@ endpoints:
   - /api-docs
   - /docs
   - /.well-known/api
+  - /.well-known/openapi.json
+  - /.well-known/health-check
+
+  # Health and status endpoints
   - /health
   - /api/health
   - /status
   - /api/status
+  - /alive
+  - /ready
+  - /ping
+  - /pong
+
+  # Version and info endpoints
   - /version
   - /api/version
+  - /info
+  - /api/info
+  - /about
+  - /api/about
+
+  # Spring Boot actuator endpoints (common in Java apps)
+  - /actuator
+  - /actuator/health
+  - /actuator/metrics
+  - /actuator/info
+
+  # Metrics and monitoring endpoints
+  - /metrics
+  - /api/metrics
+  - /prometheus
+  - /api/prometheus
+
+  # Admin and management endpoints
+  - /__admin
+  - /api/admin
+  - /admin
+  - /management
+  - /api/management
+
+  # Debug and test endpoints
+  - /debug
+  - /api/debug
+  - /test
+  - /api/test
+  - /validate
+  - /api/validate
