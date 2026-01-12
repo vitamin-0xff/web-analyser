@@ -82,7 +82,7 @@ class AssetsAnalyzer:
                             match_value = header_value[:150]
                 
                 elif rule.type == "dns_record":
-                    if rule.name and rule.name in context.dns_records:
+                    if rule.name and context.dns_records and rule.name in context.dns_records:
                         dns_values = ' '.join(str(v) for v in context.dns_records[rule.name])
                         if re.search(pattern_to_match, dns_values, re.IGNORECASE):
                             matched = True

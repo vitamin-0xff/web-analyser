@@ -1,5 +1,6 @@
 from typing import List
 import re
+import logging
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
@@ -9,7 +10,9 @@ class HeadersAnalyzer:
         self.rules = rules
 
     async def analyze(self, context: ScanContext) -> List[Detection]:
+        logger = logging.getLogger(__name__)
         detections: List[Detection] = []
+        match_count = 0
 
         for tech in self.rules:
             for rule in tech.evidence_rules:
@@ -27,6 +30,8 @@ class HeadersAnalyzer:
                 # Check pattern if provided
                 if rule.pattern:
                     if re.search(rule.pattern, header_value, re.IGNORECASE):
+                        logger.debug(f"HeadersAnalyzer matched {tech.name} on header {header_name}")
+                        match_count += 1
                         detections.append(
                             Detection(
                                 name=tech.name,
@@ -44,6 +49,8 @@ class HeadersAnalyzer:
                 
                 # Check for exact value match if provided
                 elif rule.value and rule.value.lower() == header_value.lower():
+                     logger.debug(f"HeadersAnalyzer matched {tech.name} on header {header_name} value match")
+                     match_count += 1
                      detections.append(
                         Detection(
                             name=tech.name,
@@ -58,4 +65,4 @@ class HeadersAnalyzer:
                         )
                     )
 
-        return detections
+        logger.debug(f"HeadersAnalyzer: {match_count} matches, {len(detections)} detections")

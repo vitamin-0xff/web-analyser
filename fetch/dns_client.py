@@ -1,4 +1,5 @@
 import dns.resolver
+import logging
 from typing import List, Dict, Optional
 
 # Default DNS timeout (in seconds)
@@ -20,6 +21,9 @@ def get_dns_records(
     Returns:
         Dictionary mapping record types to lists of record values
     """
+    logger = logging.getLogger(__name__)
+    logger.debug(f"DNS query for {hostname}: {record_types}")
+    
     resolver = dns.resolver.Resolver()
     resolver.lifetime = timeout or DEFAULT_DNS_TIMEOUT
     
@@ -28,6 +32,7 @@ def get_dns_records(
         try:
             answers = resolver.resolve(hostname, record_type)
             records[record_type] = [r.to_text() for r in answers]
-        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN, dns.resolver.NoNameservers, dns.exception.Timeout):
+            logger.debug(f"DNS {record_type} {hostname}: {len(records[record_type])} records")
+        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN, dns.resolver.NoNameservers, dns.exception.Timeout) as e:
             records[record_type] = []
-    return records
+            logger.debug(f"DNS {record_type} {hostname}: no records ({type(e).__name__})")

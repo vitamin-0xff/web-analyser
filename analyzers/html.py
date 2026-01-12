@@ -1,5 +1,6 @@
 from typing import List
 import re
+import logging
 from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
@@ -9,8 +10,10 @@ class HtmlAnalyzer:
         self.rules = rules
 
     async def analyze(self, context: ScanContext) -> List[Detection]:
+        logger = logging.getLogger(__name__)
         detections: List[Detection] = []
         html_content = context.html
+        match_count = 0
 
         for tech in self.rules:
             for rule in tech.evidence_rules:
@@ -20,6 +23,8 @@ class HtmlAnalyzer:
                 if rule.pattern:
                     match = re.search(rule.pattern, html_content, re.IGNORECASE)
                     if match:
+                        logger.debug(f"HtmlAnalyzer matched {tech.name} on {rule.type}")
+                        match_count += 1
                         detections.append(
                             Detection(
                                 name=tech.name,
@@ -35,6 +40,8 @@ class HtmlAnalyzer:
                         )
                 # For exact value match in HTML (less common for HTML patterns)
                 elif rule.value and rule.value.lower() in html_content.lower():
+                    logger.debug(f"HtmlAnalyzer matched {tech.name} on value {rule.value}")
+                    match_count += 1
                     detections.append(
                         Detection(
                             name=tech.name,
@@ -48,8 +55,7 @@ class HtmlAnalyzer:
                         )
                     )
 
-        return detections
-
+        logger.debug(f"HtmlAnalyzer: {match_count} matches, {len(detections)} detections")
     def _extract_version(self, text: str) -> str | None:
         """Extracts a version number from a string."""
         match = re.search(r'(\d+\.\d+(\.\d+)?)', text)

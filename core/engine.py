@@ -1,6 +1,7 @@
 from urllib.parse import urlparse, urljoin
 import re
 import hashlib
+import logging
 from core.context import ScanContext, TLSInfo
 from core.cache import get_cache
 from fetch.http_client import fetch_url
@@ -129,16 +130,23 @@ class Engine:
         )
 
     async def scan_url(self, url: str) -> ScanContext:
+        logger = logging.getLogger(__name__)
+        logger.debug(f"Starting scan_url for {url}")
         loop = asyncio.get_running_loop()
 
         # 1. Fetch HTTP data (async)
+        logger.debug(f"Fetching HTTP data from {url}")
         response = await fetch_url(url)
+        logger.debug(f"HTTP response: status={response.status_code}, content-length={len(response.text)}")
         headers = {k.lower(): v for k, v in response.headers.items()}
         html_content = response.text
         cookies = dict(response.cookies)
+        logger.debug(f"Found {len(cookies)} cookies")
         hostname = urlparse(url).hostname
+        logger.debug(f"Hostname: {hostname}")
 
         # 2. Concurrently fetch DNS and TLS info (sync functions in executor)
+        logger.debug("Fetching DNS records and TLS info concurrently")
         dns_task = loop.run_in_executor(
             None, get_dns_records, hostname, ["A", "CNAME", "MX", "TXT"]
         ) if hostname else asyncio.Future()
@@ -153,6 +161,10 @@ class Engine:
             tls_task.set_result(None)
 
         dns_records, raw_tls_info = await asyncio.gather(dns_task, tls_task)
+        if dns_records:
+            logger.debug(f"DNS records found: {list(dns_records.keys())}")
+        if raw_tls_info:
+            logger.debug(f"TLS certificate found for {url}")
 
         # 3. Process TLS info
         tls_info: Optional[TLSInfo] = None
@@ -163,29 +175,46 @@ class Engine:
                 "notBefore": raw_tls_info.get("notBefore"),
                 "notAfter": raw_tls_info.get("notAfter"),
             }
+            logger.debug(f"Processed TLS info: issuer={tls_info['issuer'].get('CN', 'N/A')}")
 
         # 4. Extract JS and script info from HTML
+        logger.debug("Extracting scripts and stylesheets from HTML")
         scripts = [urljoin(url, src) for src in re.findall(r'<script\s+[^>]*src=["\']([^"\']+)["\']', html_content)]
         stylesheets = [urljoin(url, href) for href in re.findall(r'<link\s+[^>]*rel=["\']stylesheet["\'][^>]*href=["\']([^"\']+)["\']', html_content)]
         js_globals = set(re.findall(r'(?:window\.|var\s+|let\s+|const\s+)(\w+)\s*=', html_content))
+        logger.debug(f"Found {len(scripts)} scripts, {len(stylesheets)} stylesheets, {len(js_globals)} JS globals")
 
         # 5. NEW: Extract PWA manifest and service worker
         manifest_match = re.search(r'<link\s+rel=["\']manifest["\'][^>]*href=["\']([^"\']+)["\']', html_content)
         manifest_url = urljoin(url, manifest_match.group(1)) if manifest_match else None
+        if manifest_url:
+            logger.debug(f"Found manifest: {manifest_url}")
 
         service_worker_match = re.search(r'navigator\.serviceWorker\.register\(["\']([^"\']+)["\']', html_content)
         service_worker_url = urljoin(url, service_worker_match.group(1)) if service_worker_match else None
+        if service_worker_url:
+            logger.debug(f"Found service worker: {service_worker_url}")
 
         # 6. NEW: Extract WASM modules
         wasm_modules = [urljoin(url, src) for src in re.findall(r'["\']([^"\']*\.wasm)["\']', html_content)]
+        if wasm_modules:
+            logger.debug(f"Found {len(wasm_modules)} WASM modules")
 
         # 7. NEW: Fetch robots.txt and sitemaps
         base_url = f"{urlparse(url).scheme}://{hostname}" if hostname else url
+        logger.debug(f"Fetching robots.txt and sitemaps from {base_url}")
         robots_txt = await self._fetch_robots_txt(base_url)
+        if robots_txt:
+            logger.debug("robots.txt found")
         sitemaps = await self._fetch_sitemaps(base_url, robots_txt or "")
+        if sitemaps:
+            logger.debug(f"Found {len(sitemaps)} sitemaps")
 
         # 8. NEW: Fetch favicon and compute hash
+        logger.debug("Fetching favicon")
         favicon_hash = await self._fetch_favicon_hash(base_url)
+        if favicon_hash:
+            logger.debug(f"Favicon hash: {favicon_hash}")
 
         context = ScanContext(
             url=url,
@@ -272,29 +301,41 @@ class Engine:
         return sitemaps
 
     async def analyze_context(self, context: ScanContext) -> List[Detection]:
+        logger = logging.getLogger(__name__)
         detections: List[Detection] = []
-        detections.extend(await self.headers_analyzer.analyze(context))
-        detections.extend(await self.html_analyzer.analyze(context))
-        detections.extend(await self.js_analyzer.analyze(context))
-        detections.extend(await self.cookies_analyzer.analyze(context))
-        detections.extend(await self.network_analyzer.analyze(context))
-        detections.extend(await self.css_analyzer.analyze(context))
-        # NEW: Additional analyzers
-        detections.extend(await self.meta_tags_analyzer.analyze(context))
-        detections.extend(await self.structured_data_analyzer.analyze(context))
-        detections.extend(await self.pwa_analyzer.analyze(context))
-        detections.extend(await self.robots_sitemap_analyzer.analyze(context))
-        detections.extend(await self.http_details_analyzer.analyze(context))
-        detections.extend(await self.storage_analyzer.analyze(context))
-        detections.extend(await self.endpoints_analyzer.analyze(context))
-        # PHASE 1: Passive analyzers
-        detections.extend(await self.script_content_analyzer.analyze(context))
-        detections.extend(await self.favicon_analyzer.analyze(context))
-        detections.extend(await self.forms_analyzer.analyze(context))
-        detections.extend(await self.sri_analyzer.analyze(context))
-        detections.extend(await self.comments_analyzer.analyze(context))
-        # Assets analyzer
-        detections.extend(await self.assets_analyzer.analyze(context))
+        
+        analyzers = [
+            ("headers", self.headers_analyzer),
+            ("html", self.html_analyzer),
+            ("js", self.js_analyzer),
+            ("cookies", self.cookies_analyzer),
+            ("network", self.network_analyzer),
+            ("css", self.css_analyzer),
+            ("meta_tags", self.meta_tags_analyzer),
+            ("structured_data", self.structured_data_analyzer),
+            ("pwa", self.pwa_analyzer),
+            ("robots_sitemap", self.robots_sitemap_analyzer),
+            ("http_details", self.http_details_analyzer),
+            ("storage", self.storage_analyzer),
+            ("endpoints", self.endpoints_analyzer),
+            ("script_content", self.script_content_analyzer),
+            ("favicon", self.favicon_analyzer),
+            ("forms", self.forms_analyzer),
+            ("sri", self.sri_analyzer),
+            ("comments", self.comments_analyzer),
+            ("assets", self.assets_analyzer),
+        ]
+        
+        for name, analyzer in analyzers:
+            logger.debug(f"Running {name} analyzer")
+            result = await analyzer.analyze(context)
+            if result:
+                logger.debug(f"{name} analyzer found {len(result)} technologies")
+                detections.extend(result)
+            else:
+                logger.debug(f"{name} analyzer found 0 technologies")
+        
+        logger.debug(f"Aggregating {len(detections)} detections")
         return self._aggregate_detections(detections)
 
     def _aggregate_detections(self, detections: List[Detection]) -> List[Detection]:
