@@ -6,30 +6,10 @@ from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
 from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
+from core.endpoints_loader import load_error_probe_paths
 from fetch.http_client import fetch_url
 
 logger = logging.getLogger(__name__)
-
-# Paths to trigger errors
-ERROR_PATHS = [
-    "/api/nonexistent",
-    "/nonexistent.php",
-    "/nonexistent.asp",
-    "/nonexistent.aspx",
-    "/nonexistent.jsp",
-    "/test/error",
-    "/.env",
-    "/config.php",
-    "/admin/config",
-]
-
-# Query parameters that might trigger errors
-ERROR_PARAMS = [
-    "?id=999999",
-    "?debug=true",
-    "?error=1",
-    "?test=invalid",
-]
 
 
 @AnalyzerRegistry.register(
@@ -52,15 +32,18 @@ class ErrorProbeAnalyzer:
         detections: List[Detection] = []
         base_url = context.url.rstrip('/')
         
+        # Load error paths and params from configuration
+        error_paths, error_params = load_error_probe_paths()
+        
         # Try error-triggering paths
         test_urls = []
         
         # Add invalid paths
-        for path in ERROR_PATHS:
+        for path in error_paths:
             test_urls.append(f"{base_url}{path}")
         
         # Add query parameters to base URL
-        for param in ERROR_PARAMS:
+        for param in error_params:
             test_urls.append(f"{base_url}/{param}")
         
         for test_url in test_urls[:10]:  # Limit to 10 probes

@@ -1,0 +1,27 @@
+# Common API endpoint paths for probing
+# Used by api_probe.py to detect REST APIs and API documentation
+
+endpoints:
+  - /api
+  - /api/v1
+  - /api/v2
+  - /api/v3
+  - /v1
+  - /v2
+  - /v3
+  - /rest
+  - /api/rest
+  - /api/docs
+  - /api/swagger.json
+  - /api/openapi.json
+  - /swagger.json
+  - /openapi.json
+  - /api-docs
+  - /docs
+  - /.well-known/api
+  - /health
+  - /api/health
+  - /status
+  - /api/status
+  - /version
+  - /api/version

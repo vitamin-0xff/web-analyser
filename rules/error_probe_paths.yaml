@@ -1,0 +1,19 @@
+# Paths and parameters to trigger error responses
+# Used by error_probe.py to detect technologies from error messages
+
+error_paths:
+  - /api/nonexistent
+  - /nonexistent.php
+  - /nonexistent.asp
+  - /nonexistent.aspx
+  - /nonexistent.jsp
+  - /test/error
+  - /.env
+  - /config.php
+  - /admin/config
+
+error_params:
+  - "?id=999999"
+  - "?debug=true"
+  - "?error=1"
+  - "?test=invalid"

@@ -5,42 +5,10 @@ from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
 from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
+from core.endpoints_loader import load_graphql_endpoints
 from fetch.http_client import fetch_url
 
 logger = logging.getLogger(__name__)
-
-# Common GraphQL endpoint paths
-GRAPHQL_PATHS = [
-    "/graphql",
-    "/api/graphql",
-    "/v1/graphql",
-    "/query",
-    "/api/query",
-    "/gql",
-    "/api/gql",
-    "/graphql/v1",
-    "/api/v1/graphql",
-]
-
-# GraphQL introspection query to detect server
-INTROSPECTION_QUERY = """
-{
-  __schema {
-    queryType {
-      name
-    }
-    mutationType {
-      name
-    }
-    subscriptionType {
-      name
-    }
-  }
-}
-"""
-
-# Simple query to test GraphQL endpoint
-SIMPLE_QUERY = '{"query": "{ __typename }"}'
 
 
 @AnalyzerRegistry.register(
@@ -63,8 +31,11 @@ class GraphQLAnalyzer:
         detections: List[Detection] = []
         base_url = context.url.rstrip('/')
         
+        # Load GraphQL endpoints and queries from configuration
+        graphql_paths, introspection_query, simple_query = load_graphql_endpoints()
+        
         # Try common GraphQL endpoint paths
-        for path in GRAPHQL_PATHS:
+        for path in graphql_paths:
             endpoint = f"{base_url}{path}"
             
             try:
@@ -73,7 +44,7 @@ class GraphQLAnalyzer:
                     endpoint,
                     method="POST",
                     headers={"Content-Type": "application/json"},
-                    data=INTROSPECTION_QUERY,
+                    data=introspection_query,
                     timeout=5
                 )
                 

@@ -6,36 +6,10 @@ from core.context import ScanContext
 from models.detection import Detection, Evidence
 from models.technology import Technology
 from core.analyzer_registry import AnalyzerRegistry, filter_by_rule_types
+from core.endpoints_loader import load_api_endpoints
 from fetch.http_client import fetch_url
 
 logger = logging.getLogger(__name__)
-
-# Common API endpoint patterns
-API_ENDPOINTS = [
-    "/api",
-    "/api/v1",
-    "/api/v2",
-    "/api/v3",
-    "/v1",
-    "/v2",
-    "/v3",
-    "/rest",
-    "/api/rest",
-    "/api/docs",
-    "/api/swagger.json",
-    "/api/openapi.json",
-    "/swagger.json",
-    "/openapi.json",
-    "/api-docs",
-    "/docs",
-    "/.well-known/api",
-    "/health",
-    "/api/health",
-    "/status",
-    "/api/status",
-    "/version",
-    "/api/version",
-]
 
 
 @AnalyzerRegistry.register(
@@ -58,8 +32,11 @@ class APIProbeAnalyzer:
         detections: List[Detection] = []
         base_url = context.url.rstrip('/')
         
+        # Load API endpoints from configuration
+        api_endpoints = load_api_endpoints()
+        
         # Probe API endpoints
-        for path in API_ENDPOINTS:
+        for path in api_endpoints:
             endpoint = f"{base_url}{path}"
             
             try:

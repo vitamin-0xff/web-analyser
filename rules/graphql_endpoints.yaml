@@ -1,0 +1,33 @@
+# Common GraphQL endpoint paths for probing
+# Used by graphql.py to detect GraphQL servers and introspect schemas
+
+graphql_paths:
+  - /graphql
+  - /api/graphql
+  - /v1/graphql
+  - /query
+  - /api/query
+  - /gql
+  - /api/gql
+  - /graphql/v1
+  - /api/v1/graphql
+
+# GraphQL introspection query for schema detection
+introspection_query: |
+  {
+    __schema {
+      queryType {
+        name
+      }
+      mutationType {
+        name
+      }
+      subscriptionType {
+        name
+      }
+    }
+  }
+
+# Simple query to test GraphQL endpoint
+simple_query: |
+  {"query": "{ __typename }"}
