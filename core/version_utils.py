@@ -90,7 +90,7 @@ def extract_version_from_string(text: str, technology: str = None) -> Optional[s
     return None
 
 
-def extract_version_from_meta_tag(meta_content: str, meta_name: str = None) -> Optional[str]:
+def extract_version_from_meta_tag(meta_content: str, tech_name: Optional[str] = None, meta_name: Optional[str] = None) -> Optional[str]:
     """
     Extract version from meta tag content.
     
@@ -100,6 +100,7 @@ def extract_version_from_meta_tag(meta_content: str, meta_name: str = None) -> O
     
     Args:
         meta_content: The content attribute value
+        tech_name: Technology name for context-specific extraction
         meta_name: The name attribute value (for context)
     
     Returns:
