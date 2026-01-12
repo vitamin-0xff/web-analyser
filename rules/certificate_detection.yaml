@@ -15,7 +15,7 @@
       pattern: "Amazon"
       confidence: 0.9
     - type: certificate_cn
-      pattern: "\.cloudfront\.net|\.amazonaws\.com"
+      pattern: '\.cloudfront\.net|\.amazonaws\.com'
       confidence: 0.95
 
 - name: Google Cloud
@@ -25,7 +25,7 @@
       pattern: "Google|GTS"
       confidence: 0.8
     - type: certificate_cn
-      pattern: "\.appspot\.com|\.goog|google\.com"
+      pattern: '\.appspot\.com|\.goog|google\.com'
       confidence: 0.95
 
 - name: Microsoft Azure
@@ -35,14 +35,14 @@
       pattern: "Microsoft|DigiCert"
       confidence: 0.7
     - type: certificate_cn
-      pattern: "\.azurewebsites\.net|\.cloudapp\.azure\.com|\.azure\.com"
+      pattern: '\.azurewebsites\.net|\.cloudapp\.azure\.com|\.azure\.com'
       confidence: 0.95
 
 - name: Cloudflare
   category: CDN
   evidence:
     - type: certificate_cn
-      pattern: "\.cloudflare\.com"
+      pattern: '\.cloudflare\.com'
       confidence: 0.95
     - type: certificate_issuer
       pattern: "Cloudflare"
@@ -52,14 +52,14 @@
   category: CDN
   evidence:
     - type: certificate_cn
-      pattern: "\.akamai\.com|\.akamaized\.net"
+      pattern: '\.akamai\.com|\.akamaized\.net'
       confidence: 0.95
 
 - name: Fastly
   category: CDN
   evidence:
     - type: certificate_cn
-      pattern: "\.fastly\.net"
+      pattern: '\.fastly\.net'
       confidence: 0.95
     - type: certificate_issuer
       pattern: "Fastly"
@@ -69,21 +69,21 @@
   category: Cloud Platform
   evidence:
     - type: certificate_cn
-      pattern: "\.digitalocean\.app|\.do\.app"
+      pattern: '\.digitalocean\.app|\.do\.app'
       confidence: 0.95
 
 - name: Heroku
   category: Cloud Platform
   evidence:
     - type: certificate_cn
-      pattern: "\.herokuapp\.com"
+      pattern: '\.herokuapp\.com'
       confidence: 0.95
 
 - name: GitHub Pages
   category: Hosting Platform
   evidence:
     - type: certificate_cn
-      pattern: "\.github\.io"
+      pattern: '\.github\.io'
       confidence: 0.95
     - type: certificate_issuer
       pattern: "DigiCert"
@@ -93,14 +93,14 @@
   category: Hosting Platform
   evidence:
     - type: certificate_cn
-      pattern: "\.netlify\.app"
+      pattern: '\.netlify\.app'
       confidence: 0.95
 
 - name: Vercel
   category: Hosting Platform
   evidence:
     - type: certificate_cn
-      pattern: "\.vercel\.app"
+      pattern: '\.vercel\.app'
       confidence: 0.95
 
 - name: GoDaddy
