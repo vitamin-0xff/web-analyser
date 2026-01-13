@@ -258,7 +258,7 @@ def print_validation_report(
     # Duplicates by combination
     duplicates = detect_duplicates_by_combination(rules, combination, show_files)
     if duplicates:
-        print(f"\n❌ DUPLICATE RULES (by {combination}): {len(duplicates)}")
+        print(f"\nDUPLICATE RULES (by {combination}): {len(duplicates)}")
         for combo_key, rules_list in duplicates.items():
             print(f"\n  {combo_key}")
             for rule in rules_list:

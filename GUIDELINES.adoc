@@ -4,6 +4,9 @@
 
 == 1. System Description (App Purpose)
 
+=== General Rule
+No Emojis in the code or the documentation files
+
 === Role
 A passive technology-fingerprinting engine that analyzes websites to identify 150+ underlying technologies including frontend frameworks, backend platforms, infrastructure, analytics tools, CMSs, CDNs, security components, fonts, icons, and hosting providers.
 
