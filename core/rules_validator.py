@@ -262,8 +262,10 @@ def print_validation_report(
         for combo_key, rules_list in duplicates.items():
             print(f"\n  {combo_key}")
             for rule in rules_list:
+                category = rule.get('category', 'Unknown')
+                evidence_count = len(rule.get('evidence', []))
                 file_info = f" [{rule.get('__file__', 'unknown')}]" if show_files else ""
-                print(f"    - {rule.get('name')}{file_info}")
+                print(f"    - {rule.get('name')} {category} ({evidence_count} evidences){file_info}")
     else:
         print(f"\n✓ No duplicate rules by {combination}")
     
