@@ -79,23 +79,31 @@ python -m core.rules_validator --combination name_category --no-files
 
 ## Output Interpretation
 
-### Green Checkmarks
+### ✅ Green Checkmarks
 ```
 ✓ No duplicate rules by Name
 ✓ No pattern overlaps
 ```
 Indicates no issues found for that category.
 
-### Red X Marks (Duplicates)
+### ❌ Red X Marks (Duplicates)
 ```
-DUPLICATE RULES (by Name): 48
-  ('Django',)
-    - Django [backend.yaml]
-    - Django [backend_detection.yaml]
+❌ DUPLICATE RULES (by Name): 30
+  ('Web Framework', 'Django')
+    - Django Web Framework (3 evidences) [backend.yaml]
+    - Django Web Framework (2 evidences) [cookies.yaml]
+    - Django Web Framework (1 evidences) [forms.yaml]
 ```
-Framework defined in multiple YAML files.
+Framework defined in multiple YAML files, with category and evidence count shown.
 
-### Warning Symbols (Overlaps)
+Format: `Name Category (N evidences) [filename]`
+
+This helps identify:
+- Which files have incomplete rules (1 evidence)
+- Which categories may need consolidation (multiple duplicate entries)
+- Rule coverage at a glance (3 evidences vs 1 evidence)
+
+### ⚠️ Warning Symbols (Overlaps)
 ```
 ⚠ COOKIE OVERLAPS: 10
   'JSESSIONID' -> Spring Boot, Express.js
@@ -104,9 +112,38 @@ Same cookie indicates both frameworks, needs disambiguation.
 
 ## Common Issues & Solutions
 
+### Understanding the Output Format
+
+Each duplicate rule shows three key pieces of information:
+
+```
+- Django Web Framework (3 evidences) [backend.yaml]
+  │      │      │          │           │
+  │      │      │          │           └─ File location (with --show-files)
+  │      │      │          └───────────── Number of detection patterns
+  │      │      └────────────────────── Category of the technology
+  │      └─────────────────────────────── Technology name
+  └──────────────────────────────────────── List marker
+```
+
+**Evidence Count Interpretation:**
+- **1 evidence** = Single detection method (header, cookie, etc.) - may be incomplete
+- **2-3 evidences** = Multiple detection methods - more reliable
+- **4+ evidences** = Comprehensive detection - very reliable
+
+**Consolidation Strategy:**
+1. Find rules with same Name + Category
+2. Check evidence counts - merge higher evidence count into single rule
+3. Combine detection patterns from multiple files into one definitive rule
+4. Remove duplicate entries
+
 ### Issue: Too Many Duplicates
 **Problem:** Framework defined in 4+ files
 **Solution:** Consider consolidating rules into single file or using specific_file parameter
+
+### Issue: Incomplete Rules
+**Problem:** Rule has only 1 evidence (e.g., Flask (1 evidence) in backend.yaml)
+**Solution:** Check other files for same framework, merge their evidence patterns
 
 ### Issue: Cookie Overlaps
 **Problem:** JSESSIONID used by multiple frameworks
