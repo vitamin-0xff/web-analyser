@@ -231,13 +231,6 @@
       pattern: 'prestashop'
       confidence: 0.7
 
-- name: WooCommerce
-  category: Ecommerce
-  evidence:
-    - type: html_pattern
-      pattern: 'woocommerce'
-      confidence: 0.8
-
 - name: BigCommerce
   category: Ecommerce
   evidence:

@@ -8,15 +8,6 @@
     - type: sri_hash
       value: "sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
       confidence: 0.95
-
-- name: Bootstrap
-  category: Frontend Framework
-  version: "5.2.3"
-  evidence:
-    - type: sri_hash
-      value: "sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
-      confidence: 0.95
-
 # jQuery
 - name: jQuery
   category: JavaScript Library
@@ -24,14 +15,6 @@
   evidence:
     - type: sri_hash
       value: "sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-      confidence: 0.95
-
-- name: jQuery
-  category: JavaScript Library
-  version: "3.6.4"
-  evidence:
-    - type: sri_hash
-      value: "sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
       confidence: 0.95
 
 # Font Awesome

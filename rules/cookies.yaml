@@ -27,15 +27,6 @@
       name: "cf_clearance"
       confidence: 0.8
 
-# Extended cookies detections
-
-- name: Django
-  category: Web Framework
-  evidence:
-    - type: cookie
-      name: "sessionid"
-      confidence: 0.8
-
 - name: Laravel
   category: Web Framework
   evidence:
