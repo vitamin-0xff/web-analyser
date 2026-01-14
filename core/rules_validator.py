@@ -258,7 +258,7 @@ def print_validation_report(
     # Duplicates by combination
     duplicates = detect_duplicates_by_combination(rules, combination, show_files)
     if duplicates:
-        print(f"\nDUPLICATE RULES (by {combination}): {len(duplicates)}")
+        print(f"\n[!] DUPLICATE RULES (by {combination}): {len(duplicates)}")
         for combo_key, rules_list in duplicates.items():
             print(f"\n  {combo_key}")
             for rule in rules_list:
@@ -267,35 +267,35 @@ def print_validation_report(
                 file_info = f" [{rule.get('__file__', 'unknown')}]" if show_files else ""
                 print(f"    - {rule.get('name')} {category} ({evidence_count} evidences){file_info}")
     else:
-        print(f"\n✓ No duplicate rules by {combination}")
+        print(f"\n[OK] No duplicate rules by {combination}")
     
     # Cookie overlaps
     cookie_overlaps = detect_cookie_overlaps(rules, show_files)
     if cookie_overlaps:
-        print(f"\n⚠ COOKIE OVERLAPS: {len(cookie_overlaps)}")
+        print(f"\n[WARNING] COOKIE OVERLAPS: {len(cookie_overlaps)}")
         for cookie, frameworks in sorted(cookie_overlaps.items()):
             print(f"  '{cookie}' -> {', '.join(frameworks)}")
     else:
-        print("\n✓ No cookie overlaps")
+        print("\n[OK] No cookie overlaps")
     
     # Header overlaps
     header_overlaps = detect_header_overlaps(rules, show_files)
     if header_overlaps:
-        print(f"\n⚠ HEADER OVERLAPS: {len(header_overlaps)}")
+        print(f"\n[WARNING] HEADER OVERLAPS: {len(header_overlaps)}")
         for header, frameworks in sorted(header_overlaps.items()):
             print(f"  '{header}' -> {', '.join(frameworks)}")
     else:
-        print("\n✓ No header overlaps")
+        print("\n[OK] No header overlaps")
     
     # Pattern overlaps
     pattern_overlaps = detect_pattern_overlaps(rules, show_files)
     if pattern_overlaps:
-        print(f"\n⚠ PATTERN OVERLAPS: {len(pattern_overlaps)}")
+        print(f"\n[WARNING] PATTERN OVERLAPS: {len(pattern_overlaps)}")
         if verbose:
             for pattern, frameworks in sorted(pattern_overlaps.items()):
                 print(f"  '{pattern}' -> {', '.join(frameworks)}")
     else:
-        print("\n✓ No pattern overlaps")
+        print("\n[OK] No pattern overlaps")
     
     # Statistics
     total_evidence = sum(

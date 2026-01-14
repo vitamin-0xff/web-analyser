@@ -137,7 +137,7 @@ Priority features for future commits:
   - rules/certificate_detection.yaml
   - tests/test_certificate_analyzer.py
 
-✏️ MODIFIED:
+**MODIFIED:**
   - analyzers/api_probe.py (multi-method HTTP requests)
   - rules/error_probe_paths.yaml (expanded payloads)
 ```
@@ -149,7 +149,7 @@ Priority features for future commits:
 All new code passes syntax validation:
 ```bash
 python3 -m py_compile analyzers/certificate.py tests/test_certificate_analyzer.py
-# ✓ All new files compile successfully
+# [OK] All new files compile successfully
 ```
 
 Run tests with:

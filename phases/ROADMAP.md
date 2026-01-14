@@ -74,7 +74,7 @@ Implement active analyzers (requires careful rate limiting):
 - Response time fingerprinting
 - HTTP method enumeration
 
-### 6. Configuration System ⚙️
+### 6. Configuration System
 **Status**: Not Started
 
 Add user-configurable settings:
@@ -85,7 +85,7 @@ Add user-configurable settings:
 - Enable/disable specific analyzers
 - Custom rule directories
 
-### 7. Batch Scanning 📝
+### 7. Batch Scanning
 **Status**: Not Started
 
 Scan multiple URLs efficiently:
@@ -95,7 +95,7 @@ Scan multiple URLs efficiently:
 - Aggregate statistics across scans
 - Compare results between URLs
 
-### 8. Error Handling & Resilience 🛡️
+### 8. Error Handling & Resilience
 **Status**: Not Started
 
 Make the engine more robust:
@@ -126,7 +126,7 @@ Allow external analyzers:
 - Community analyzer marketplace
 - Custom rule loader hooks
 
-### 11. API Mode 🚀
+### 11. API Mode
 **Status**: Planned
 
 Run as a service:

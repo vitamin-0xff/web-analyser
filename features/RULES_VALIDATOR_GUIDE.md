@@ -81,14 +81,14 @@ python -m core.rules_validator --combination name_category --no-files
 
 ### ✅ Green Checkmarks
 ```
-✓ No duplicate rules by Name
-✓ No pattern overlaps
+[OK] No duplicate rules by Name
+[OK] No pattern overlaps
 ```
 Indicates no issues found for that category.
 
-### ❌ Red X Marks (Duplicates)
+### [!] Red X Marks (Duplicates)
 ```
-❌ DUPLICATE RULES (by Name): 30
+[!] DUPLICATE RULES (by Name): 30
   ('Web Framework', 'Django')
     - Django Web Framework (3 evidences) [backend.yaml]
     - Django Web Framework (2 evidences) [cookies.yaml]
@@ -103,9 +103,9 @@ This helps identify:
 - Which categories may need consolidation (multiple duplicate entries)
 - Rule coverage at a glance (3 evidences vs 1 evidence)
 
-### ⚠️ Warning Symbols (Overlaps)
+### [WARNING] Warning Symbols (Overlaps)
 ```
-⚠ COOKIE OVERLAPS: 10
+[WARNING] COOKIE OVERLAPS: 10
   'JSESSIONID' -> Spring Boot, Express.js
 ```
 Same cookie indicates both frameworks, needs disambiguation.

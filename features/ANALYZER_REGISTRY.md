@@ -202,7 +202,7 @@ uv run main.py https://example.com --active --exclude api_probe error_probe
 
 ### Safety & Ethical Usage
 
-⚠️ **Active detection makes HTTP requests to the target system:**
+**NOTE:** **Active detection makes HTTP requests to the target system:**
 - Always get permission before scanning
 - Respects HTTP status codes (404, 401, etc.)
 - Limits probes to common paths
