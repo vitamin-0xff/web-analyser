@@ -21,15 +21,10 @@
       pattern: |
         tailwind(\.min)?\.css
       confidence: 0.9
-    - type: script_src
-      pattern: 'cdn\.tailwindcss\.com'
-      confidence: 0.95
     - type: html_pattern
-      pattern: 'class=".*\s+(sm:|md:|lg:|xl:|2xl:)'
-      confidence: 0.8
-    - type: html_pattern
-      pattern: 'class=".*(hover:|focus:|active:|group-hover:)'
-      confidence: 0.7
+      pattern: |
+        class=".*(flex|grid|p-|m-|text-).*"
+      confidence: 0.5
 
 # Extended CSS detections
 
@@ -206,9 +201,12 @@
 - name: DaisyUI
   category: UI Library
   evidence:
+    - type: css_link
+      pattern: 'daisyui'
+      confidence: 0.95
     - type: html_pattern
-      pattern: 'class=".*(daisy-|daisyui).*"'
-      confidence: 0.8
+      pattern: 'class=".*daisyui|data-theme='
+      confidence: 0.85
     - type: html_pattern
-      pattern: 'data-theme='
-      confidence: 0.7
+      pattern: 'class=".*(btn|card|badge|modal|drawer|dropdown|drawer).*"'
+      confidence: 0.3

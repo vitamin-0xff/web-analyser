@@ -48,11 +48,11 @@
   category: JavaScript Library
   evidence:
     - type: js_global
-      pattern: '_.VERSION|_.template|_.debounce|_.throttle'
+      pattern: '_\.VERSION|_\.isArray|_\.map|_\.forEach|_\.debounce|_\.throttle'
       confidence: 0.9
     - type: script_src
       pattern: 'lodash.*\.js'
-      confidence: 0.9
+      confidence: 0.95
 
 - name: Moment.js
   category: JavaScript Library
