@@ -50,13 +50,6 @@
       pattern: 'data-svelte'
       confidence: 0.9
 
-- name: jQuery
-  category: JavaScript Library
-  evidence:
-    - type: script_src
-      pattern: 'jquery.*\.js'
-      confidence: 0.9
-
 # Extended frontend detections
 
 - name: Next.js
@@ -185,13 +178,6 @@
     - type: html_pattern
       pattern: 'data-solid'
       confidence: 0.8
-
-- name: Preact
-  category: Frontend Framework
-  evidence:
-    - type: html_pattern
-      pattern: 'preact'
-      confidence: 0.6
 
 - name: Eleventy
   category: Static Site Generator

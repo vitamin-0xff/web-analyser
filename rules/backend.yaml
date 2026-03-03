@@ -215,18 +215,6 @@
       name: "JSESSIONID"
       confidence: 0.6
 
-- name: Cloudflare
-  category: CDN
-  evidence:
-    - type: header
-      name: "Server"
-      pattern: "cloudflare"
-      confidence: 0.9
-    - type: header
-      name: "CF-Ray"
-      pattern: "."
-      confidence: 0.9
-
 - name: Amazon CloudFront
   category: CDN
   evidence:
@@ -238,6 +226,30 @@
       name: "Via"
       pattern: "CloudFront"
       confidence: 0.8
+
+- name: Netlify
+  category: Hosting
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Netlify"
+      confidence: 0.9
+    - type: header
+      name: "X-NF-Request-ID"
+      pattern: "."
+      confidence: 0.9
+
+- name: Vercel
+  category: Hosting
+  evidence:
+    - type: header
+      name: "Server"
+      pattern: "Vercel"
+      confidence: 0.9
+    - type: header
+      name: "X-Vercel-ID"
+      pattern: "."
+      confidence: 0.9
 
 - name: Akamai
   category: CDN

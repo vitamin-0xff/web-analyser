@@ -181,16 +181,6 @@
       pattern: 'class=".*bi-[a-z0-9-]+.*"'
       confidence: 0.6
 
-- name: Ionicons
-  category: Icon Library
-  evidence:
-    - type: css_link
-      pattern: 'ionicons'
-      confidence: 0.9
-    - type: html_pattern
-      pattern: 'class=".*ion-[a-z-]+.*"'
-      confidence: 0.6
-
 - name: Feather Icons
   category: Icon Library
   evidence:

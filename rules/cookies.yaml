@@ -1,15 +1,5 @@
 # Rules for detecting technologies via cookies
 
-- name: Google Analytics
-  category: Analytics
-  evidence:
-    - type: cookie
-      name: "_ga"
-      confidence: 0.8
-    - type: cookie
-      name: "_gid"
-      confidence: 0.8
-
 - name: WordPress
   category: CMS
   evidence:

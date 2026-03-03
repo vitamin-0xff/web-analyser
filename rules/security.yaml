@@ -185,35 +185,6 @@
       pattern: saml[2]?
       confidence: 0.80
 
-# SSL/TLS
-- name: Let's Encrypt Certificate
-  category: Security
-  evidence:
-    - type: certificate_issuer
-      pattern: Let's Encrypt
-      confidence: 0.95
-
-- name: DigiCert Certificate
-  category: Security
-  evidence:
-    - type: certificate_issuer
-      pattern: DigiCert
-      confidence: 0.95
-
-- name: Cloudflare SSL
-  category: Security
-  evidence:
-    - type: certificate_issuer
-      pattern: Cloudflare
-      confidence: 0.95
-
-- name: Sectigo Certificate
-  category: Security
-  evidence:
-    - type: certificate_issuer
-      pattern: Sectigo|COMODO
-      confidence: 0.95
-
 # Security Plugins/Extensions
 - name: Wordfence (WordPress Security)
   category: Security

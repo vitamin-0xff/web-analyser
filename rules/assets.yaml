@@ -168,30 +168,6 @@
       confidence: 0.7
 
 # Static Site Hosting
-- name: Netlify
-  category: Hosting
-  evidence:
-    - type: header
-      name: "Server"
-      pattern: "Netlify"
-      confidence: 0.9
-    - type: header
-      name: "X-NF-Request-ID"
-      pattern: "."
-      confidence: 0.9
-
-- name: Vercel
-  category: Hosting
-  evidence:
-    - type: header
-      name: "Server"
-      pattern: "Vercel"
-      confidence: 0.9
-    - type: header
-      name: "X-Vercel-ID"
-      pattern: "."
-      confidence: 0.9
-
 - name: GitHub Pages
   category: Hosting
   evidence:

@@ -1,13 +1,5 @@
 # Rules for detecting technologies via network information (TLS, DNS)
 
-- name: Let's Encrypt
-  category: Certificate Authority
-  evidence:
-    - type: tls_issuer
-      name: "commonName"
-      pattern: "let's encrypt"
-      confidence: 0.9
-
 - name: Cloudflare
   category: CDN
   evidence:
