@@ -1,35 +1,35 @@
 import asyncio
 import argparse
 import json
+import sys
 import logging
+from typing import List
 from core.engine import Engine
 from core.analyzer_registry import AnalyzerRegistry
+from core.formatters import FORMATS
 
-def _truncate_value(value: str, max_length: int = 200) -> str:
-    """Truncate a string to max_length, adding ellipsis if truncated."""
-    if not value:
-        return value
-    if len(value) <= max_length:
-        return value
-    return value[:max_length] + "..."
 
-def _serialize_detection(d, value_max_length: int = 200):
-    return {
-        "name": d.name,
-        "category": d.category,
-        "confidence": d.confidence,
-        "version": d.version,
-        "evidence": {
-            "type": d.evidence.type,
-            "name": d.evidence.name,
-            "value": _truncate_value(d.evidence.value, value_max_length),
-            "pattern": d.evidence.pattern,
-        },
-    }
+def _load_urls_from_file(path: str, logger: logging.Logger) -> List[str]:
+    """Read one URL per line from a file, ignoring blank lines and comments."""
+    try:
+        with open(path) as f:
+            urls = [line for line in (l.strip() for l in f) if line and not line.startswith("#")]
+        if not urls:
+            logger.error(f"No URLs found in {path}")
+        return urls
+    except FileNotFoundError:
+        logger.error(f"URLs file not found: {path}")
+        return []
+    except Exception as e:
+        logger.error(f"Error reading URLs file: {e}")
+        return []
+
 
 def main():
     parser = argparse.ArgumentParser(description="Website technology fingerprinting CLI")
-    parser.add_argument("url", nargs="?", help="Target URL (e.g., https://example.com)")
+    url_group = parser.add_mutually_exclusive_group()
+    url_group.add_argument("url", nargs="?", help="Target URL (e.g., https://example.com)")
+    url_group.add_argument("--urls-file", type=str, metavar="FILE", help="Path to a file containing one URL per line for batch scanning")
     parser.add_argument("--confidence-threshold", type=float, default=0.0, help="Minimum confidence to include")
     parser.add_argument("--value-max-length", type=int, default=200, help="Maximum length for evidence values (default: 200, use 0 for unlimited)")
     parser.add_argument("--log-level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR"], help="Logging verbosity level (default: INFO)")
@@ -37,6 +37,7 @@ def main():
     parser.add_argument("--list-analyzers", action="store_true", help="List all available analyzers and exit")
     parser.add_argument("--analyze-mode", type=str, default="passive", choices=["passive", "active", "all"], help="Analysis mode: passive (default), active (only active analyzers), or all (both)")
     parser.add_argument("--headers-file", type=str, help="Path to JSON file containing additional HTTP headers (e.g., User-Agent, Cookie, Authorization)")
+    parser.add_argument("--format", type=str, default="json", choices=list(FORMATS.keys()), help="Output format: json (default), table, or csv")
     args = parser.parse_args()
     
     # Configure logging
@@ -59,8 +60,8 @@ def main():
         return
     
     # Require URL if not listing analyzers
-    if not args.url:
-        parser.error("URL is required unless using --list-analyzers")
+    if not args.url and not args.urls_file:
+        parser.error("A URL argument or --urls-file is required unless using --list-analyzers")
     
     # Load custom headers from JSON file if provided
     custom_headers = {}
@@ -81,6 +82,14 @@ def main():
         except Exception as e:
             logger.error(f"Error reading headers file: {e}")
             return
+    
+    # Build list of URLs to scan
+    if args.urls_file:
+        urls = _load_urls_from_file(args.urls_file, logger)
+        if not urls:
+            sys.exit(2)
+    else:
+        urls = [args.url]
     
     # Validate and apply analyzer mode
     exclude_set = set(args.exclude) if args.exclude else set()
@@ -105,35 +114,59 @@ def main():
         logger.info(f"Available analyzers: {', '.join(sorted(available_analyzers))}")
         return
     
-    logger.info(f"Starting scan of {args.url} with confidence threshold {args.confidence_threshold}")
     if exclude_set:
         logger.info(f"Excluding analyzers: {', '.join(sorted(exclude_set))}")
     if custom_headers:
         logger.info(f"Using custom headers: {', '.join(custom_headers.keys())}")
 
-    async def run():
-        logger = logging.getLogger(__name__)
-        engine = Engine(exclude_analyzers=exclude_set, custom_headers=custom_headers)
-        logger.info("Initialized analysis engine")
-        
-        logger.info(f"Fetching {args.url}...")
-        context = await engine.scan_url(args.url)
-        logger.info(f"Successfully fetched {args.url}, status: {context.status_code}")
+    # Use unlimited length if value_max_length is 0
+    max_len = None if args.value_max_length == 0 else args.value_max_length
+
+    async def scan_one(engine: Engine, url: str) -> List:
+        logger.info(f"Fetching {url}...")
+        try:
+            context = await engine.scan_url(url)
+        except Exception as e:
+            logger.error(f"Failed to fetch {url}: {e}")
+            sys.exit(1)
+        logger.info(f"Successfully fetched {url}, status: {context.status_code}")
         logger.debug(f"HTML length: {len(context.html)} bytes, scripts: {len(context.scripts)}, stylesheets: {len(context.stylesheets)}")
-        
+
         logger.info("Starting technology analysis...")
         detections = await engine.analyze_context(context)
         logger.info(f"Analysis complete, found {len(detections)} technologies before filtering")
-        
+
         filtered = [d for d in detections if d.confidence >= args.confidence_threshold]
         logger.info(f"After confidence filtering: {len(filtered)} technologies")
-        
-        # Use unlimited length if value_max_length is 0
-        max_len = None if args.value_max_length == 0 else args.value_max_length
-        serialized = [_serialize_detection(d, max_len or 999999) for d in filtered]
-        
-        logger.info("Serializing detections to JSON")
-        print(json.dumps(serialized, indent=2))
+        return filtered
+
+    async def run():
+        engine = Engine(exclude_analyzers=exclude_set, custom_headers=custom_headers)
+        logger.info("Initialized analysis engine")
+        formatter = FORMATS[args.format]
+
+        if len(urls) == 1:
+            # Single URL: output as before
+            filtered = await scan_one(engine, urls[0])
+            print(formatter(filtered, max_len or 999999))
+        else:
+            # Batch mode: output a mapping of URL -> results
+            results = {}
+            for idx, url in enumerate(urls, 1):
+                logger.info(f"Scanning {url} ({idx}/{len(urls)})")
+                filtered = await scan_one(engine, url)
+                results[url] = filtered
+
+            if args.format == "json":
+                batch_output = {
+                    url: json.loads(FORMATS["json"](detections, max_len or 999999))
+                    for url, detections in results.items()
+                }
+                print(json.dumps(batch_output, indent=2))
+            else:
+                for url, detections in results.items():
+                    print(f"\n=== {url} ===")
+                    print(formatter(detections, max_len or 999999))
 
     asyncio.run(run())
 

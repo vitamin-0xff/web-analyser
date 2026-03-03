@@ -71,3 +71,4 @@ class HeadersAnalyzer:
                     )
 
         logger.debug(f"HeadersAnalyzer: {match_count} matches, {len(detections)} detections")
+        return detections
