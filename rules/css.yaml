@@ -21,10 +21,15 @@
       pattern: |
         tailwind(\.min)?\.css
       confidence: 0.9
+    - type: script_src
+      pattern: 'cdn\.tailwindcss\.com'
+      confidence: 0.95
     - type: html_pattern
-      pattern: |
-        class=".*(flex|grid|p-|m-|text-).*"
-      confidence: 0.5
+      pattern: 'class=".*\s+(sm:|md:|lg:|xl:|2xl:)'
+      confidence: 0.8
+    - type: html_pattern
+      pattern: 'class=".*(hover:|focus:|active:|group-hover:)'
+      confidence: 0.7
 
 # Extended CSS detections
 
@@ -202,5 +207,8 @@
   category: UI Library
   evidence:
     - type: html_pattern
-      pattern: 'class=".*(btn|card|badge|modal|drawer).*"'
-      confidence: 0.4
+      pattern: 'class=".*(daisy-|daisyui).*"'
+      confidence: 0.8
+    - type: html_pattern
+      pattern: 'data-theme='
+      confidence: 0.7
