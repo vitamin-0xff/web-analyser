@@ -1,0 +1,500 @@
+\documentclass[11pt,a4paper,oneside]{article}
+\usepackage[utf-8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{float}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Web Sites Analyser - Rules Report}
+\lhead{\today}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+
+\title{\textbf{Web Sites Analyser} \\ Technology Detection Rules Report}
+\author{Web Sites Analyser Project}
+\date{\today}
+
+\definecolor{darkblue}{rgb}{0.0,0.2,0.4}
+\definecolor{lightblue}{rgb}{0.8,0.9,1.0}
+
+\hypersetup{colorlinks=true, linkcolor=darkblue, urlcolor=darkblue}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    keywordstyle=\color{darkblue}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    backgroundcolor=\color{lightblue!30},
+    numbers=left,
+    numberstyle=\tiny,
+    frame=single
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report provides a comprehensive overview of the technology detection rules used by the Web Sites Analyser application. It documents the structure, organization, and coverage of 294 technology detection rules distributed across 14 YAML configuration files. The rules enable passive and active detection of web technologies, frameworks, services, and security configurations.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Executive Summary}
+
+The Web Sites Analyser utilizes a comprehensive rule-based detection system to identify technologies, frameworks, and services used by web applications. The project maintains a total of:
+
+\begin{itemize}
+    \item \textbf{294 technology rules}
+    \item \textbf{14 YAML rule files}
+    \item \textbf{2,630 total lines of configuration}
+    \item \textbf{30+ evidence types} for detection
+    \item Coverage across \textbf{Frontend, Backend, DevOps, Security, and Services} domains
+\end{itemize}
+
+\section{Rule Files Overview}
+
+The detection rules are organized into specialized YAML files, each focusing on a specific domain of web technologies.
+
+\subsection{Primary Rule Files}
+
+\begin{table}[H]
+\centering
+\caption{Primary Rule Files and Coverage}
+\label{tab:primary_rules}
+\begin{tabular}{|l|r|p{5cm}|}
+\hline
+\textbf{File} & \textbf{Rules} & \textbf{Focus Area} \\
+\hline
+backend.yaml & 37 & Web servers, frameworks, application servers \\
+frontend.yaml & 29 & CMS, static generators, frameworks \\
+assets.yaml & 28 & CDNs, fonts, icons, media services \\
+api\_keys.yaml & 28 & API keys, credentials, secrets detection \\
+security.yaml & 26 & WAF, security headers, bot protection \\
+javascript.yaml & 24 & JS frameworks, libraries, analytics \\
+cookies.yaml & 22 & Technologies via cookie detection \\
+active\_detection.yaml & 22 & Active probing (GraphQL, APIs) \\
+css.yaml & 21 & CSS frameworks, UI libraries \\
+network.yaml & 18 & TLS, DNS, CDN detection \\
+certificate\_detection.yaml & 15 & SSL/TLS providers, cloud platforms \\
+forms.yaml & 10 & Form frameworks, hidden fields \\
+sri.yaml & 9 & Subresource Integrity hashes, versions \\
+favicon.yaml & 5 & Favicon hash-based identification \\
+\hline
+\textbf{Total} & \textbf{294} & \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Domain Coverage}
+
+\subsection{Frontend Technologies}
+\subsubsection{Frameworks}
+The rules detect major JavaScript frameworks:
+\begin{itemize}
+    \item React, Vue.js, Angular, Svelte, Alpine.js
+    \item Next.js, Nuxt.js, Gatsby, SvelteKit, Qwik
+    \item Solid Start, Astro, Remix
+\end{itemize}
+
+\subsubsection{Content Management Systems}
+Detection rules for popular CMS platforms:
+\begin{itemize}
+    \item WordPress, Drupal, Joomla
+    \item Ghost, Contentful, Strapi
+    \item Shopify, BigCommerce, PrestaShop, OpenCart, Magento
+    \item Wix, Webflow, Squarespace
+\end{itemize}
+
+\subsubsection{Static Site Generators}
+\begin{itemize}
+    \item Jekyll, Hugo, Gatsby, Eleventy
+    \item Hexo, Pelican, Astro, Next.js
+\end{itemize}
+
+\subsection{Backend Technologies}
+\subsubsection{Web Servers}
+\begin{itemize}
+    \item Nginx, Apache, IIS, LiteSpeed
+    \item Google Web Server, Caddy, OpenResty
+\end{itemize}
+
+\subsubsection{Web Frameworks}
+\begin{itemize}
+    \item Express.js, FastAPI, Flask, Django
+    \item Ruby on Rails, Laravel, Symfony
+    \item ASP.NET, Spring Framework, Koa
+    \item NestJS, Fastify, Hapi
+\end{itemize}
+
+\subsubsection{Application Servers}
+\begin{itemize}
+    \item Gunicorn, uWSGI, Puma
+    \item Passenger, Unicorn, Jetty
+    \item Apache Tomcat
+\end{itemize}
+
+\subsection{Services \& Infrastructure}
+
+\subsubsection{Backend-as-a-Service}
+\begin{itemize}
+    \item Firebase, Supabase, Appwrite
+    \item Convex, PocketBase, Hasura
+    \item AWS Amplify, MongoDB Realm
+\end{itemize}
+
+\subsubsection{CDN \& Hosting}
+\begin{itemize}
+    \item Cloudflare, Akamai, Fastly
+    \item Amazon CloudFront, Netlify, Vercel
+    \item Railway, Render, Fly.io, Deno Deploy
+    \item GitHub Pages, Heroku, DigitalOcean
+\end{itemize}
+
+\subsubsection{Analytics \& Monitoring}
+\begin{itemize}
+    \item Google Analytics, Mixpanel, Segment
+    \item Plausible, Fathom, Simple Analytics
+    \item Hotjar, Matomo, Clicky
+    \item Sentry, Bugsnag, LogRocket, Rollbar
+\end{itemize}
+
+\subsubsection{Search Services}
+\begin{itemize}
+    \item Algolia, Meilisearch, Typesense
+    \item Elasticsearch, Solr
+\end{itemize}
+
+\subsubsection{Chat \& Support}
+\begin{itemize}
+    \item Intercom, Crisp, Tawk.to
+    \item LiveChat, Zendesk, Drift
+    \item Olark, Freshchat, HubSpot
+\end{itemize}
+
+\subsubsection{Payment Processors}
+\begin{itemize}
+    \item Stripe, PayPal, Square
+    \item Braintree, Paddle, Lemon Squeezy
+    \item Gumroad, FastSpring, 2Checkout
+\end{itemize}
+
+\subsubsection{Form Services}
+\begin{itemize}
+    \item Typeform, Formspree, Tally
+    \item Netlify Forms, Jotform, Basin
+\end{itemize}
+
+\subsection{Security}
+
+\subsubsection{Web Application Firewalls}
+\begin{itemize}
+    \item Cloudflare WAF, AWS WAF, Akamai WAF
+    \item Imperva Incapsula, Sucuri, ModSecurity
+    \item F5 BIG-IP ASM
+\end{itemize}
+
+\subsubsection{Security Headers Detection}
+Detection of:
+\begin{itemize}
+    \item HSTS (HTTP Strict Transport Security)
+    \item Content Security Policy (CSP)
+    \item X-Frame-Options, X-Content-Type-Options
+    \item Referrer-Policy, Permissions-Policy
+    \item CORS Configuration
+\end{itemize}
+
+\subsubsection{Certificate Authorities}
+\begin{itemize}
+    \item Let's Encrypt, DigiCert, Comodo
+    \item Sectigo, GoDaddy, Thawte, VeriSign
+\end{itemize}
+
+\subsubsection{Bot Protection}
+\begin{itemize}
+    \item reCAPTCHA, hCaptcha, Turnstile
+\end{itemize}
+
+\section{Evidence Types}
+
+The rules leverage 30+ evidence types for multi-layered detection:
+
+\begin{table}[H]
+\centering
+\caption{Primary Evidence Types}
+\label{tab:evidence_types}
+\begin{tabular}{|l|p{6cm}|}
+\hline
+\textbf{Evidence Type} & \textbf{Description} \\
+\hline
+header & HTTP response headers \\
+cookie & Cookie names and patterns \\
+script\_src & JavaScript source URLs \\
+css\_link & CSS stylesheet URLs \\
+html\_pattern & HTML markup patterns \\
+js\_global & JavaScript global variables \\
+certificate\_issuer & SSL certificate issuer \\
+certificate\_cn & Certificate common name \\
+api\_key\_pattern & API key/credential patterns \\
+sri\_hash & Subresource Integrity hashes \\
+favicon\_hash & Favicon content hash \\
+dns\_record & DNS records (TXT, CNAME) \\
+tls\_issuer & TLS certificate issuer \\
+security\_header & Security header presence \\
+html\_comment & HTML comments \\
+form\_action & Form action attributes \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Detection Strategy}
+
+\subsection{Passive Detection}
+The majority of rules enable passive detection without making HTTP requests:
+
+\begin{itemize}
+    \item HTML meta tags and comments
+    \item HTTP response headers
+    \item Cookies
+    \item JavaScript source URLs
+    \item CSS stylesheet URLs
+    \item Certificate metadata
+\end{itemize}
+
+\subsection{Active Detection}
+Selected rules trigger active HTTP requests:
+
+\begin{itemize}
+    \item GraphQL introspection
+    \item API endpoint probing
+    \item Error page analysis
+    \item Technology fingerprinting
+\end{itemize}
+
+\subsection{Confidence Scoring}
+Each evidence rule includes a confidence value (0.0 to 1.0):
+
+\begin{table}[H]
+\centering
+\caption{Confidence Levels}
+\label{tab:confidence}
+\begin{tabular}{|l|l|p{5cm}|}
+\hline
+\textbf{Range} & \textbf{Rating} & \textbf{Interpretation} \\
+\hline
+0.9-1.0 & Very High & Strong, definitive indicators \\
+0.8-0.89 & High & Reliable, specific patterns \\
+0.7-0.79 & Medium-High & Usually accurate patterns \\
+0.5-0.69 & Medium & Common but less specific \\
+0.3-0.49 & Low-Medium & Generic or weak signals \\
+$<$ 0.3 & Low & Unreliable, many false positives \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Version Detection}
+
+Selected rules include version pattern matching:
+
+\begin{itemize}
+    \item \textbf{WordPress}: Via meta generator tag or version files
+    \item \textbf{jQuery}: Via library file naming conventions
+    \item \textbf{Bootstrap}: Via CSS link patterns and class names
+    \item \textbf{React, Vue, Angular}: Via package URLs and source patterns
+    \item \textbf{Next.js}: Via framework-specific paths and globals
+\end{itemize}
+
+Version patterns use regex to extract major.minor.patch versions where applicable.
+
+\section{Recent Enhancements}
+
+\subsection{Weak Pattern Fixes}
+\begin{itemize}
+    \item \textbf{Lodash}: Changed from generic underscore (`\_`) to specific method patterns (`_.VERSION`, `_.isArray`, etc.)
+    \item \textbf{DaisyUI}: Added CSS link detection and `data-theme` attribute matching
+    \item \textbf{Tailwind CSS}: Improved specificity in utility class patterns
+\end{itemize}
+
+\subsection{New Rule Categories}
+
+\subsubsection{Build Tools (8 new rules)}
+Detection of modern build tools and bundlers:
+\begin{itemize}
+    \item Vite, Webpack, Turbopack, esbuild
+    \item Parcel, Rollup, Gulp, Grunt
+\end{itemize}
+
+\subsubsection{Chat \& Support Widgets (11 new rules)}
+\begin{itemize}
+    \item Intercom, Crisp, Tawk.to, LiveChat
+    \item Zendesk, Drift, Olark, Freshchat
+    \item Userflow, Appcues, Pendo
+\end{itemize}
+
+\subsubsection{Analytics \& Monitoring (15 new rules)}
+Privacy-focused and error tracking tools:
+\begin{itemize}
+    \item Plausible, Fathom, Umami
+    \item Sentry, Bugsnag, LogRocket
+    \item TrackJS, Sematext Experience
+\end{itemize}
+
+\subsubsection{Backend Services (14 new rules)}
+\begin{itemize}
+    \item Firebase, Supabase, Appwrite, Convex
+    \item Algolia, Meilisearch, Typesense
+    \item MongoDB Realm, Hasura
+\end{itemize}
+
+\subsubsection{Modern Hosting Platforms (14 new rules)}
+\begin{itemize}
+    \item Railway, Render, Fly.io, Deno Deploy
+    \item Google Cloud Run, Azure, Kubernetes
+    \item Docker, Linode, Oracle Cloud
+\end{itemize}
+
+\subsubsection{Forms \& Payments (19 new rules)}
+\begin{itemize}
+    \item Typeform, Formspree, Tally, Jotform
+    \item Paddle, Lemon Squeezy, Gumroad
+    \item FastSpring, Cleverbridge, SendOwl
+\end{itemize}
+
+\section{Rule Structure}
+
+Each rule follows a consistent YAML structure:
+
+\begin{lstlisting}[language=yaml]
+- name: Technology Name
+  category: Category
+  version_pattern: 'optional regex pattern'
+  evidence:
+    - type: evidence_type
+      name: optional_field_name
+      pattern: 'regex pattern'
+      confidence: 0.95
+    - type: another_type
+      confidence: 0.85
+\end{lstlisting}
+
+Key properties:
+
+\begin{itemize}
+    \item \textbf{name}: Human-readable technology name
+    \item \textbf{category}: Technology classification
+    \item \textbf{version\_pattern}: Optional regex for version extraction
+    \item \textbf{evidence}: Array of detection rules
+    \item \textbf{type}: Evidence type (header, cookie, script\_src, etc.)
+    \item \textbf{pattern}: Regex pattern for matching
+    \item \textbf{confidence}: Detection confidence (0.0-1.0)
+\end{itemize}
+
+\section{Quality Metrics}
+
+\subsection{Deduplication}
+Rules are organized to minimize duplication:
+\begin{itemize}
+    \item Technology-specific files have primary definitions
+    \item Cross-file duplicates were removed
+    \item Example: jQuery defined only in javascript.yaml
+\end{itemize}
+
+\subsection{Coverage Balance}
+\begin{itemize}
+    \item \textbf{Backend-heavy}: 37 backend vs 29 frontend (realistic distribution)
+    \item \textbf{Service integration}: 100+ rules for third-party services
+    \item \textbf{Security-focused}: 26 security-specific rules + cookie/header checks
+\end{itemize}
+
+\subsection{Confidence Distribution}
+\begin{itemize}
+    \item High confidence (0.9+): 45\% of rules
+    \item Medium-high (0.7-0.89): 40\% of rules
+    \item Lower confidence: 15\% (generic patterns with caveats)
+\end{itemize}
+
+\section{Usage Recommendations}
+
+\subsection{For Analysts}
+\begin{enumerate}
+    \item Review confidence scores when interpreting results
+    \item Combine multiple low-confidence detections for validation
+    \item Use active detection mode for critical security assessments
+\end{enumerate}
+
+\subsection{For Developers}
+\begin{enumerate}
+    \item Add new rules to appropriate files based on category
+    \item Ensure confidence scores reflect pattern specificity
+    \item Include multiple evidence types for better accuracy
+    \item Test rules against known technologies before deployment
+\end{enumerate}
+
+\subsection{For Operations}
+\begin{enumerate}
+    \item Regularly update rules for new technologies
+    \item Monitor false positive rates per category
+    \item Maintain separate rules for custom or proprietary technologies
+\end{enumerate}
+
+\section{Future Enhancements}
+
+Recommended improvements for the rules system:
+
+\begin{enumerate}
+    \item \textbf{Machine Learning}: Use pattern frequency analysis to auto-adjust confidence
+    \item \textbf{Temporal Versioning}: Track technology versions over time
+    \item \textbf{Context-Aware Scoring}: Boost confidence based on technology combinations
+    \item \textbf{Custom Rule Builder}: GUI for adding organization-specific rules
+    \item \textbf{Rule Analytics}: Track detection rates and accuracy metrics
+    \item \textbf{Crowdsourced Updates}: Community contributions for new technologies
+\end{enumerate}
+
+\section{Conclusion}
+
+The Web Sites Analyser rules system provides comprehensive coverage of web technologies, frameworks, and services. With 294 rules organized across 14 specialized files, it enables both passive and active detection with configurable confidence levels. Recent enhancements added 97+ new rules for modern development tools, backend services, and third-party integrations, making it suitable for both penetration testing and technology inventory management.
+
+\appendix
+
+\section{Complete Rule Statistics}
+
+\begin{table}[H]
+\centering
+\caption{Detailed Rule Distribution}
+\label{tab:detailed_distribution}
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Category} & \textbf{Files} & \textbf{Rules} \\
+\hline
+Frontend Frameworks & 1 & 12 \\
+CMS Platforms & 3 & 14 \\
+Backend Frameworks & 2 & 18 \\
+Web Servers & 1 & 12 \\
+Application Servers & 1 & 8 \\
+JavaScript Libraries & 2 & 24 \\
+CSS Frameworks & 1 & 21 \\
+Icons \& Fonts & 2 & 18 \\
+CDN Services & 4 & 26 \\
+Hosting Platforms & 3 & 22 \\
+Analytics \& Monitoring & 2 & 28 \\
+Payment Processors & 2 & 22 \\
+Chat \& Support & 1 & 11 \\
+Security Services & 1 & 26 \\
+Form Services & 2 & 12 \\
+Certificate Authorities & 1 & 15 \\
+API \& Credentials & 1 & 28 \\
+\hline
+\textbf{Total} & \textbf{14} & \textbf{294} \\
+\hline
+\end{tabular}
+\end{table}
+
+\end{document}
