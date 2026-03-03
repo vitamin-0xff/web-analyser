@@ -33,6 +33,7 @@ import analyzers.sri
 import analyzers.comments
 import analyzers.assets
 import analyzers.certificate
+import analyzers.security_headers
 # Active detection analyzers (require --active flag)
 import analyzers.graphql
 import analyzers.api_probe

@@ -5,11 +5,12 @@ A comprehensive web technology fingerprinting and detection engine that identifi
 ## Features
 
 - **Multi-source Detection**: Analyzes HTTP headers, HTML, JavaScript, CSS, DNS, TLS, cookies, service metadata, inline scripts, forms, favicon hashes, SRI hashes, comments, and asset URLs
-- **Modular Architecture**: 19 pluggable analyzers for different detection methods
-- **Extensive Coverage**: 150+ technologies detected across web servers, frameworks, CMSs, CDNs, analytics, payments, hosting platforms
+- **Security Analysis**: Detects missing security headers (HSTS, CSP, X-Frame-Options), weak configurations, insecure cookies, permissive CORS, and information disclosure
+- **Modular Architecture**: 20 pluggable analyzers for different detection methods
+- **Extensive Coverage**: 150+ technologies detected across web servers, frameworks, CMSs, CDNs, analytics, payments, hosting platforms, WAFs, and security tools
 - **Confidence Aggregation**: Combines multiple evidence sources and caps confidence at 1.0
 - **Async/Concurrent**: Non-blocking HTTP, DNS, and TLS operations
-- **Rule-driven**: YAML-based detection rules for easy extension (10 rule files)
+- **Rule-driven**: YAML-based detection rules for easy extension (11 rule files)
 - **CLI & JSON Output**: Simple command-line interface with structured JSON output
 
 ## Installation
@@ -132,6 +133,9 @@ Final detections (capped at 1.0 confidence)
 ### Assets (1)
 - **AssetsAnalyzer**: Font detection (Google Fonts, Font Awesome), icon libraries, image CDNs (Cloudinary, Imgix), video services (YouTube, Vimeo), JS CDNs, and hosting platform fingerprints
 
+### Security (1)
+- **SecurityHeadersAnalyzer**: Security posture analysis including missing security headers (HSTS, CSP, X-Frame-Options, X-Content-Type-Options), weak configurations, insecure cookies, permissive CORS, information disclosure headers, and WAF detection
+
 ## Detection Rules
 
 Rules are defined in YAML files under `rules/`:
@@ -146,6 +150,7 @@ Rules are defined in YAML files under `rules/`:
 - **forms.yaml** (10 frameworks): Form signatures for Django, Rails, Laravel, Symfony, ASP.NET, Spring
 - **sri.yaml** (10 libraries): SRI hash detection for Bootstrap, jQuery, Vue.js, React, Font Awesome
 - **assets.yaml** (30+ rules): Font providers, icon libraries, image CDNs, video platforms, JS CDNs, hosting fingerprints
+- **security.yaml** (30+ rules): WAFs (Cloudflare, AWS WAF, Imperva, Sucuri, ModSecurity), bot protection (reCAPTCHA, hCaptcha), SSL certificates (Let's Encrypt, DigiCert, Cloudflare), security headers, authentication methods
 
 ### Evidence Types
 
@@ -177,6 +182,9 @@ Rules are defined in YAML files under `rules/`:
 | `font_src_pattern` | fonts.googleapis.com |
 | `image_src_pattern` | res.cloudinary.com |
 | `video_embed_pattern` | youtube.com/embed |
+| `security_header` | Missing HSTS, weak CSP |
+| `security_cookie` | Missing Secure/HttpOnly flags |
+| `security_csp` | CSP with unsafe-inline |
 
 ## Confidence Model
 

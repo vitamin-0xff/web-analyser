@@ -1,0 +1,263 @@
+# Security-related detection rules
+# These rules detect security mechanisms, frameworks, and potential vulnerabilities
+
+# Web Application Firewalls (WAF)
+- name: Cloudflare WAF
+  category: Security
+  evidence:
+    - type: header
+      name: cf-ray
+      confidence: 0.95
+    - type: header
+      name: cf-cache-status
+      confidence: 0.90
+
+- name: AWS WAF
+  category: Security
+  evidence:
+    - type: header
+      name: x-amzn-requestid
+      confidence: 0.90
+    - type: header
+      name: x-amz-cf-id
+      confidence: 0.85
+
+- name: Akamai WAF
+  category: Security
+  evidence:
+    - type: header
+      name: x-akamai-transformed
+      confidence: 0.95
+
+- name: Imperva Incapsula
+  category: Security
+  evidence:
+    - type: header
+      name: x-iinfo
+      confidence: 0.95
+    - type: cookie
+      name: incap_ses
+      confidence: 0.90
+    - type: cookie
+      name: visid_incap
+      confidence: 0.90
+
+- name: Sucuri WAF
+  category: Security
+  evidence:
+    - type: header
+      name: x-sucuri-id
+      confidence: 0.95
+    - type: header
+      name: x-sucuri-cache
+      confidence: 0.90
+
+- name: ModSecurity
+  category: Security
+  evidence:
+    - type: header
+      name: server
+      pattern: ModSecurity
+      confidence: 0.90
+
+- name: F5 BIG-IP ASM
+  category: Security
+  evidence:
+    - type: cookie
+      name: TS[a-f0-9]{6}
+      confidence: 0.85
+    - type: header
+      name: x-wa-info
+      confidence: 0.90
+
+# DDoS Protection
+- name: Cloudflare DDoS Protection
+  category: Security
+  evidence:
+    - type: header
+      name: cf-ray
+      confidence: 0.85
+
+- name: Fastly Shield
+  category: Security
+  evidence:
+    - type: header
+      name: x-served-by
+      pattern: cache-.*-fastly
+      confidence: 0.85
+
+# Bot Protection
+- name: reCAPTCHA
+  category: Security
+  evidence:
+    - type: script_src
+      pattern: google\.com/recaptcha
+      confidence: 0.95
+    - type: script_src
+      pattern: gstatic\.com/recaptcha
+      confidence: 0.90
+
+- name: hCaptcha
+  category: Security
+  evidence:
+    - type: script_src
+      pattern: hcaptcha\.com
+      confidence: 0.95
+
+- name: Turnstile (Cloudflare)
+  category: Security
+  evidence:
+    - type: script_src
+      pattern: challenges\.cloudflare\.com
+      confidence: 0.90
+
+# Rate Limiting
+- name: Rate Limiting Active
+  category: Security
+  evidence:
+    - type: header
+      name: x-ratelimit-limit
+      confidence: 0.80
+    - type: header
+      name: x-rate-limit-limit
+      confidence: 0.80
+    - type: header
+      name: ratelimit-limit
+      confidence: 0.80
+
+# Security Headers (Properly configured)
+- name: Secure HSTS Configuration
+  category: Security
+  evidence:
+    - type: header
+      name: strict-transport-security
+      pattern: max-age=31536000.*includeSubDomains
+      confidence: 0.95
+
+- name: Content Security Policy Configured
+  category: Security
+  evidence:
+    - type: header
+      name: content-security-policy
+      confidence: 0.85
+
+- name: X-Frame-Options Protection
+  category: Security
+  evidence:
+    - type: header
+      name: x-frame-options
+      pattern: (DENY|SAMEORIGIN)
+      confidence: 0.90
+
+- name: Referrer Policy Configured
+  category: Security
+  evidence:
+    - type: header
+      name: referrer-policy
+      pattern: (no-referrer|strict-origin|strict-origin-when-cross-origin)
+      confidence: 0.80
+
+# Authentication & Authorization
+- name: OAuth 2.0
+  category: Security
+  evidence:
+    - type: html_pattern
+      pattern: oauth
+      confidence: 0.70
+    - type: script_src
+      pattern: oauth
+      confidence: 0.75
+
+- name: JWT Authentication
+  category: Security
+  evidence:
+    - type: cookie
+      name: jwt
+      confidence: 0.75
+    - type: cookie
+      name: token
+      confidence: 0.60
+
+- name: SAML Authentication
+  category: Security
+  evidence:
+    - type: html_pattern
+      pattern: saml[2]?
+      confidence: 0.80
+
+# SSL/TLS
+- name: Let's Encrypt Certificate
+  category: Security
+  evidence:
+    - type: certificate_issuer
+      pattern: Let's Encrypt
+      confidence: 0.95
+
+- name: DigiCert Certificate
+  category: Security
+  evidence:
+    - type: certificate_issuer
+      pattern: DigiCert
+      confidence: 0.95
+
+- name: Cloudflare SSL
+  category: Security
+  evidence:
+    - type: certificate_issuer
+      pattern: Cloudflare
+      confidence: 0.95
+
+- name: Sectigo Certificate
+  category: Security
+  evidence:
+    - type: certificate_issuer
+      pattern: Sectigo|COMODO
+      confidence: 0.95
+
+# Security Plugins/Extensions
+- name: Wordfence (WordPress Security)
+  category: Security
+  evidence:
+    - type: cookie
+      name: wfvt_
+      confidence: 0.85
+    - type: html_pattern
+      pattern: wordfence
+      confidence: 0.80
+
+- name: iThemes Security
+  category: Security
+  evidence:
+    - type: cookie
+      name: itsec-hb
+      confidence: 0.85
+
+- name: All In One WP Security
+  category: Security
+  evidence:
+    - type: html_pattern
+      pattern: aiowps
+      confidence: 0.80
+
+# Vulnerability Scanners
+- name: Acunetix Scan Detected
+  category: Security
+  evidence:
+    - type: header
+      name: acunetix-product
+      confidence: 0.90
+
+# CORS Configuration
+- name: CORS Enabled
+  category: Security
+  evidence:
+    - type: header
+      name: access-control-allow-origin
+      confidence: 0.80
+
+# Subresource Integrity
+- name: Subresource Integrity (SRI) Enabled
+  category: Security
+  evidence:
+    - type: sri_hash
+      confidence: 0.90
